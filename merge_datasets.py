@@ -2,30 +2,16 @@ import pandas as pd
 
 # Load the central dataset
 livable_df = pd.read_csv('livable_cities.csv')
+livable_df['City'] = livable_df['City'].astype(str).str.strip()
+livable_df['Country'] = livable_df['Country'].astype(str).str.strip()
 
 # Load cost-of-living dataset and select relevant columns
 cost_df = pd.read_csv('cost-of-living.csv', usecols=['city', 'country', 'x1', 'x54'])
 cost_df.rename(columns={'city': 'City', 'country': 'Country'}, inplace=True)
+cost_df['City'] = cost_df['City'].astype(str).str.strip()
+cost_df['Country'] = cost_df['Country'].astype(str).str.strip()
 
-# Merge cost-of-living data
-livable_df = livable_df.merge(cost_df, on=['City', 'Country'], how='left')
-
-# Load air pollution dataset and select relevant columns
-pollution_df = pd.read_csv('air_pollution.csv', usecols=['city', 'country', '2023'])
-pollution_df.rename(columns={'city': 'City', 'country': 'Country', '2023': 'Air_Pollution_2023'}, inplace=True)
-
-# Merge air pollution data
-livable_df = livable_df.merge(pollution_df, on=['City', 'Country'], how='left')
-
-# Load uaScoresDataFrame dataset and select relevant columns
-ua_df = pd.read_csv('uaScoresDataFrame.csv', usecols=['UA_Name', 'UA_Country', 'Education', 'Taxation', 'Internet Access'])
-ua_df.rename(columns={'UA_Name': 'City', 'UA_Country': 'Country'}, inplace=True)
-
-# Strip whitespace from City and Country columns
-ua_df['City'] = ua_df['City'].str.strip()
-ua_df['Country'] = ua_df['Country'].str.strip()
-
-# Normalize country names to match livable_cities.csv
+# Normalize cost-of-living country names to match livable_cities.csv and other datasets
 country_mapping = {
     'New Mexico': 'UnitedStates',
     'Alabama': 'UnitedStates',
@@ -43,22 +29,51 @@ country_mapping = {
     'Washington': 'UnitedStates',
     'Oregon': 'UnitedStates',
     'New York': 'UnitedStates',
-    'New Zealand': 'NewZealand',
-    'Hong Kong': 'HongKong(China)',
-    'South Korea': 'SouthKorea',
-    'Saudi Arabia': 'SaudiArabia',
+    'USA': 'UnitedStates',
+    'United States': 'UnitedStates',
+    'UK': 'UnitedKingdom',
     'United Kingdom': 'UnitedKingdom',
     'Czech Republic': 'CzechRepublic',
     'United Arab Emirates': 'UnitedArabEmirates',
+    'Bosnia Herzegovina': 'BosniaAndHerzegovina',
     'Bosnia and Herzegovina': 'BosniaAndHerzegovina',
     'North Macedonia': 'NorthMacedonia',
+    'South Korea': 'SouthKorea',
     'South Africa': 'SouthAfrica',
+    'New Zealand': 'NewZealand',
+    'Saudi Arabia': 'SaudiArabia',
+    'Hong Kong': 'HongKong(China)',
+    'Hong Kong SAR': 'HongKong(China)',
+    'Macao SAR': 'HongKong(China)',
 }
+
+cost_df['Country'] = cost_df['Country'].replace(country_mapping)
+
+# Merge cost-of-living data
+livable_df = livable_df.merge(cost_df, on=['City', 'Country'], how='left')
+
+# Load air pollution dataset and select relevant columns
+pollution_df = pd.read_csv('air_pollution.csv', usecols=['city', 'country', '2023'])
+pollution_df.rename(columns={'city': 'City', 'country': 'Country', '2023': 'Air_Pollution_2023'}, inplace=True)
+pollution_df['City'] = pollution_df['City'].astype(str).str.strip()
+pollution_df['Country'] = pollution_df['Country'].astype(str).str.strip()
+
+pollution_df['Country'] = pollution_df['Country'].replace(country_mapping)
+
+# Merge air pollution data
+livable_df = livable_df.merge(pollution_df, on=['City', 'Country'], how='left')
+
+# Load uaScoresDataFrame dataset and select relevant columns
+ua_df = pd.read_csv('uaScoresDataFrame.csv', usecols=['UA_Name', 'UA_Country', 'Education', 'Taxation', 'Internet Access'])
+ua_df.rename(columns={'UA_Name': 'City', 'UA_Country': 'Country'}, inplace=True)
+ua_df['City'] = ua_df['City'].astype(str).str.strip()
+ua_df['Country'] = ua_df['Country'].astype(str).str.strip()
+
+# Normalize UA country names to match livable_cities.csv
+ua_df['Country'] = ua_df['Country'].replace(country_mapping)
 
 print("Before normalization - sample UA countries:")
 print(ua_df['Country'].unique()[:20])
-
-ua_df['Country'] = ua_df['Country'].replace(country_mapping)
 
 print("\nAfter normalization - sample UA countries:")
 print(ua_df['Country'].unique()[:20])

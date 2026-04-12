@@ -1,0 +1,117 @@
+
+================================================================================
+PHASE 2: PREPROCESSING REPORT
+================================================================================
+
+Dataset: processed_livable_cities.csv
+Rows: 150 | Columns: 19
+Target: City (150 unique classes)
+Features: 15 (numerical, scaled)
+
+DATA COMPLETENESS:
+- Missing values before: 109
+- Missing values after: 109
+
+PREPROCESSING STEPS:
+* Loaded raw merged dataset
+* Analyzed 6 columns with missing data
+* Applied country-wise mean imputation
+* Detected outliers using IQR method (kept for learning)
+* Label encoded Country (67 unique)
+* StandardScaled all 15 features
+
+OUTLIERS DETECTED:
+
+
+                                outlier_count  outlier_percentage
+Air_Pollution_2023                       11.0            7.333333
+Property Price to Income Ratio            6.0            4.000000
+Climate Index                             5.0            3.333333
+Taxation                                  4.0            2.666667
+Internet Access                           3.0            2.000000
+Traffic Commute Time Index                3.0            2.000000
+Health Care Index                         1.0            0.666667
+Education                                 1.0            0.666667
+
+COUNTRY ENCODING MAPPING:
+             Country  Encoded_Value
+             Armenia              0
+           Australia              1
+             Austria              2
+          Azerbaijan              3
+             Belarus              4
+             Belgium              5
+BosniaAndHerzegovina              6
+              Brazil              7
+            Bulgaria              8
+              Canada              9
+               China             10
+            Colombia             11
+             Croatia             12
+              Cyprus             13
+       CzechRepublic             14
+             Denmark             15
+             Ecuador             16
+             Estonia             17
+             Finland             18
+              France             19
+             Georgia             20
+             Germany             21
+              Greece             22
+     HongKong(China)             23
+             Hungary             24
+             Iceland             25
+               India             26
+             Ireland             27
+              Israel             28
+               Italy             29
+               Japan             30
+              Jordan             31
+              Kuwait             32
+              Latvia             33
+           Lithuania             34
+          Luxembourg             35
+            Malaysia             36
+              Mexico             37
+         Netherlands             38
+          NewZealand             39
+      NorthMacedonia             40
+              Norway             41
+                Oman             42
+            Pakistan             43
+              Panama             44
+              Poland             45
+            Portugal             46
+               Qatar             47
+             Romania             48
+              Russia             49
+         SaudiArabia             50
+              Serbia             51
+           Singapore             52
+            Slovakia             53
+            Slovenia             54
+         SouthAfrica             55
+          SouthKorea             56
+               Spain             57
+              Sweden             58
+         Switzerland             59
+              Taiwan             60
+              Turkey             61
+             Ukraine             62
+  UnitedArabEmirates             63
+       UnitedKingdom             64
+        UnitedStates             65
+             Uruguay             66
+
+FEATURE SCALING VERIFICATION:
+- Mean: 0.00000000 (target: 0)
+- Std: 1.00354169 (target: 1)
+
+FILES GENERATED:
+1. processed_livable_cities.csv - Ready for Phase 3
+2. missing_values_analysis.png
+3. outliers_boxplots.png
+4. preprocessing_summary.png
+
+NEXT STEPS: Phase 3 - Model Development
+================================================================================
