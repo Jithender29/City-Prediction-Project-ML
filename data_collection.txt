@@ -1,0 +1,40 @@
+Preprocessing Tasks for Phase 1: Data Merging
+
+1. Loaded the central dataset 'livable_cities.csv' containing city livability indices (147 cities).
+
+2. From 'cost-of-living.csv':
+   - Selected columns: city, country, x1, x54
+   - Renamed 'city' to 'City' and 'country' to 'Country' for consistency
+   - Merged into livable_cities.csv on City and Country using left join
+   - Successfully matched ~100 cities
+
+3. From 'air_pollution.csv':
+   - Selected columns: city, country, 2023
+   - Renamed 'city' to 'City', 'country' to 'Country', and '2023' to 'Air_Pollution_2023'
+   - Merged into the dataset on City and Country using left join
+   - Successfully matched ~80 cities (2023 air pollution data available for these)
+
+4. From 'uaScoresDataFrame.csv':
+   - Selected columns: UA_Name, UA_Country, Education, Taxation, Internet Access
+   - Renamed 'UA_Name' to 'City' and 'UA_Country' to 'Country'
+   - Issue encountered: UA_Country contained leading/trailing whitespace and used state names (e.g., "Texas", "New York") instead of country names
+   - Solution applied:
+     * Stripped whitespace from both City and Country columns
+     * Created country normalization mapping to convert US state names to 'UnitedStates'
+     * Applied similar normalization for other regions (NewZealand, HongKong(China), SouthKorea, etc.)
+   - Successfully matched 110 cities with Education, Taxation, and Internet Access data
+
+5. Saved the merged dataset as 'merged_livable_cities.csv'
+
+Data Quality Summary:
+- Total rows in merged dataset: 150
+- Rows with cost-of-living x1 and x54: ~100
+- Rows with air pollution 2023 data: ~80
+- Rows with Education, Taxation, Internet Access: 110
+
+Notes:
+- All merges used left join to preserve all rows from the central dataset
+- Leading/trailing whitespace in country names was critical issue that required data cleaning
+- State names in UA dataset required normalization (Texas → UnitedStates, etc.)
+- Some rows have incomplete data (NaN values) where matching countries/cities were not found
+- The merge script has been optimized for future re-runs and is documented in merge_datasets.py
