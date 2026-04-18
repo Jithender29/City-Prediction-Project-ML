@@ -4,12 +4,12 @@ PHASE 2: PREPROCESSING REPORT
 ================================================================================
 
 Dataset: processed_livable_cities.csv
-Rows: 150 | Columns: 19
+Rows: 150 | Columns: 18
 Target: City (150 unique classes)
-Features: 15 (numerical, scaled)
+Features: 14 (numerical, scaled)
 
 DATA COMPLETENESS:
-- Missing values before: 109
+- Missing values before: 171
 - Missing values after: 0
 
 PREPROCESSING STEPS:
@@ -18,7 +18,7 @@ PREPROCESSING STEPS:
 * Applied country-wise mean imputation
 * Detected outliers using IQR method (kept for learning)
 * Label encoded Country (67 unique)
-* StandardScaled all 15 features
+* StandardScaled all 14 features
 
 OUTLIERS DETECTED:
 
