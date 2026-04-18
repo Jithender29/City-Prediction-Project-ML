@@ -10,7 +10,7 @@ Features: 15 (numerical, scaled)
 
 DATA COMPLETENESS:
 - Missing values before: 109
-- Missing values after: 109
+- Missing values after: 0
 
 PREPROCESSING STEPS:
 * Loaded raw merged dataset
@@ -24,14 +24,13 @@ OUTLIERS DETECTED:
 
 
                                 outlier_count  outlier_percentage
-Air_Pollution_2023                       11.0            7.333333
+Air_Pollution_2023                       13.0            8.666667
+Taxation                                 11.0            7.333333
+Internet Access                           7.0            4.666667
 Property Price to Income Ratio            6.0            4.000000
 Climate Index                             5.0            3.333333
-Taxation                                  4.0            2.666667
-Internet Access                           3.0            2.000000
 Traffic Commute Time Index                3.0            2.000000
 Health Care Index                         1.0            0.666667
-Education                                 1.0            0.666667
 
 COUNTRY ENCODING MAPPING:
              Country  Encoded_Value
@@ -105,7 +104,7 @@ BosniaAndHerzegovina              6
 
 FEATURE SCALING VERIFICATION:
 - Mean: 0.00000000 (target: 0)
-- Std: 1.00354169 (target: 1)
+- Std: 1.00335009 (target: 1)
 
 FILES GENERATED:
 1. processed_livable_cities.csv - Ready for Phase 3
