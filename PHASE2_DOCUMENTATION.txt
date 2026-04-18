@@ -1,0 +1,434 @@
+================================================================================
+PHASE 2: DATA PROCESSING & PREPROCESSING - DOCUMENTATION
+================================================================================
+City Prediction Project - ML
+Target Variable: City (Classification Task)
+Date: 2026-04-12
+
+================================================================================
+SECTION MAPPING AND DETAILED EXPLANATIONS
+================================================================================
+
+SECTION 1: IMPORT LIBRARIES
+────────────────────────────────────────────────────────────────────────────────
+Purpose: Import required Python libraries for data processing and visualization
+
+Libraries Used:
+  • pandas: Data manipulation and analysis
+  • numpy: Numerical computations
+  • sklearn.preprocessing.LabelEncoder: Categorical variable encoding
+  • sklearn.preprocessing.StandardScaler: Feature scaling normalization
+  • matplotlib.pyplot: Static visualization
+  • seaborn: Statistical data visualization
+  • warnings: Filter out deprecation warnings
+
+Configuration:
+  • Set seaborn style to 'whitegrid' for better plot aesthetics
+  • Configure default matplotlib figure size (14, 8)
+
+
+SECTION 2: LOAD DATASET
+────────────────────────────────────────────────────────────────────────────────
+Purpose: Load the merged dataset from Phase 1 and display basic information
+
+Input File: merged_livable_cities.csv (output from Phase 1 - data merging)
+
+Output:
+  • Dataset shape (rows × columns)
+  • Column names and structure
+  • First 5 rows preview
+
+Context:
+  The merged dataset contains 150 cities with 18 columns (1 ranking + 1 identifier
+  + 1 grouping + 15 numerical features). This is the starting point for all
+  preprocessing operations.
+
+
+SECTION 3: MISSING VALUE ANALYSIS
+────────────────────────────────────────────────────────────────────────────────
+Purpose: Analyze and visualize missing values to understand data quality issues
+
+Key Analysis:
+  1. Count missing values per column
+  2. Calculate missing percentage for each column
+  3. Identify which columns have missing data
+  4. Sort by severity (highest % missing first)
+
+Expected Missing Columns:
+  • x1, x54: Cost of living metrics (~33% missing)
+  • Air_Pollution_2023: Air quality index (~47% missing)
+  • Education, Taxation, Internet Access: Urban assessment scores (~27% missing)
+  • Core livability indices: 0% missing (100% complete)
+
+Visualization:
+  • Horizontal bar chart showing missing counts and percentages
+  • Helps identify which features need imputation
+
+Decision Point:
+  These sparse features will be handled in Section 5 using country-wise mean
+  imputation to preserve geographical/cultural patterns.
+
+
+SECTION 4: DEFINE FEATURE CATEGORIES
+────────────────────────────────────────────────────────────────────────────────
+Purpose: Categorize numerical features into groups based on completeness
+         and imputation requirements
+
+Feature Categories:
+
+1. CORE FEATURES (9 features - 100% complete):
+   • Quality of Life Index
+   • Purchasing Power Index
+   • Safety Index
+   • Health Care Index
+   • Cost of Living Index
+   • Property Price to Income Ratio
+   • Traffic Commute Time Index
+   • Pollution Index
+   • Climate Index
+
+   Characteristics:
+   - No missing values
+   - All 150 cities have data
+   - Will NOT require imputation
+
+2. SPARSE FEATURES (6 features - 27-47% missing):
+   • x1 (Cost metric 1)
+   • x54 (Cost metric 54)
+   • Air_Pollution_2023 (Air quality 2023)
+   • Education (Education index)
+   • Taxation (Tax burden)
+   • Internet Access (Internet availability)
+
+   Characteristics:
+   - Varying levels of missing data
+   - Will require IMPUTATION (Section 5)
+   - Data from external datasets with fewer cities covered
+
+Completeness Check:
+  Verifies that each feature has the expected data coverage.
+  Used to validate the categorization.
+
+
+SECTION 5: HANDLE MISSING VALUES (COUNTRY-WISE MEAN IMPUTATION)
+────────────────────────────────────────────────────────────────────────────────
+Purpose: Fill missing values in sparse features using domain-informed strategy
+
+Strategy: Country-wise Mean Imputation (Two-level Approach)
+
+LEVEL 1: Country-wise Mean
+  For each sparse feature:
+    1. Group data by Country
+    2. Calculate mean of feature for each country
+    3. Fill NaN values with the respective country's mean
+    
+  Rationale:
+    - Cities in the same country often have similar characteristics
+    - Preserves geographical/cultural patterns in the data
+    - More informed than global mean (local context matters)
+
+LEVEL 2: Global Mean (Fallback)
+  For any remaining NaN values after Level 1:
+    1. Calculate global mean across all cities
+    2. Fill remaining NaN with this global value
+    
+  Purpose:
+    - Handles single-city countries where country-wise mean = single value
+    - Ensures NO missing values in final dataset
+
+Result:
+  ✓ Zero missing values after this step
+  ✓ All 15 numerical features are complete
+  ✓ Ready for scaling and encoding
+
+
+SECTION 6: OUTLIER DETECTION (IQR METHOD)
+────────────────────────────────────────────────────────────────────────────────
+Purpose: Identify extreme values (outliers) in each numerical feature
+
+Method: Interquartile Range (IQR) - Standard Statistical Approach
+
+Calculation for each feature:
+  1. Q1 = 25th percentile
+  2. Q3 = 75th percentile
+  3. IQR = Q3 - Q1
+  4. Lower Bound = Q1 - 1.5 × IQR
+  5. Upper Bound = Q3 + 1.5 × IQR
+  6. Outliers = values < Lower Bound OR > Upper Bound
+
+Output:
+  • Count of outliers per feature
+  • Percentage of outliers
+  • Min and max values for validation
+
+Decision Applied: KEEP OUTLIERS AS-IS
+  Rationale:
+    - Outliers represent real-world extremes (very safe cities, expensive areas)
+    - These extremes are valuable for the model to learn city characteristics
+    - Removal would lose important information about city diversity
+    - Examples: Zurich (expensive), Luxembourg (small), etc.
+
+Visualization:
+  • Box plots for all 15 features (3×5 grid)
+  • Red titles indicate features with detected outliers
+  • Helps visually inspect outlier patterns
+
+
+SECTION 7: CATEGORICAL ENCODING (LABEL ENCODING)
+────────────────────────────────────────────────────────────────────────────────
+Purpose: Convert categorical Country column to numerical format for ML models
+
+Method: Label Encoding (Ordinal/Integer Encoding)
+
+Process:
+  1. Extract unique countries from dataset
+  2. Assign each country a unique integer (0, 1, 2, ...)
+  3. Create "Country_Encoded" column with integer values
+  4. Sort countries alphabetically for consistency
+
+Encoding Scheme:
+  • Austria → 0
+  • Belgium → 1
+  • Canada → 2
+  ... (sorted alphabetically)
+  • Total: 16 unique countries
+
+Output:
+  • New column "Country_Encoded" with integer values (0-15)
+  • Country mapping table for reference
+  • Original "Country" column retained for EDA/grouping
+
+Why Label Encoding (not One-Hot)?
+  - Smaller memory footprint (1 column vs. 16 columns)
+  - Simpler implementation
+  - Works well with tree-based models that handle ordinal features
+  - Sufficient for this use case with <20 unique values
+
+
+SECTION 8: SCALE NUMERICAL FEATURES (STANDARDSCALER)
+────────────────────────────────────────────────────────────────────────────────
+Purpose: Normalize all numerical features to have mean=0 and std=1
+
+Method: StandardScaler (Z-score Normalization)
+
+Formula for each feature value x:
+  x_scaled = (x - mean) / standard_deviation
+
+Applied to ALL 15 numerical features:
+  • 9 core features (already complete)
+  • 6 sparse features (already imputed)
+
+Scaling Process:
+  1. Calculate mean and std for each feature
+  2. Subtract mean from each value (centering)
+  3. Divide by standard deviation (scaling)
+
+Benefits:
+  • Puts all features on same scale
+  • Prevents features with large values from dominating models
+  • Improves convergence in distance-based algorithms
+  • Required for most ML algorithms (SVM, KNN, Neural Networks, etc.)
+
+Verification:
+  • Mean ≈ 0 (within machine precision, ~1e-8)
+  • Std ≈ 1 (within machine precision, ~1e-8)
+  • Individual feature statistics displayed for validation
+
+
+SECTION 9: CREATE FINAL DATASET
+────────────────────────────────────────────────────────────────────────────────
+Purpose: Assemble final processed dataset with all transformations applied
+
+Final Dataset Structure:
+  
+  Column 1: Rank (integer)
+    - Original city ranking from Phase 1
+    - Kept for reference, not used in model features
+
+  Column 2: City (string) ← TARGET VARIABLE
+    - City name (150 unique classes)
+    - What the model will predict
+    - Classification task: Given features, predict which city
+
+  Column 3: Country (string)
+    - Original country name
+    - Kept for post-modeling analysis and grouping
+    - Not used directly in model features
+
+  Column 4: Country_Encoded (integer)
+    - Label-encoded country (0-15)
+    - Used in model features (numerical)
+
+  Columns 5-19: 15 Scaled Numerical Features
+    - All scaled to mean≈0, std≈1
+    - Core features (100% complete, no imputation needed)
+    - Sparse features (imputed, then scaled)
+    - Ready for ML models
+
+Dataset Properties:
+  • Shape: 150 rows × 19 columns
+  • Missing values: 0 (100% complete)
+  • Data types: int, str, float (all standardized)
+  • Ready for train-test split and model training
+
+
+SECTION 10: EXPORT PROCESSED DATASET
+────────────────────────────────────────────────────────────────────────────────
+Purpose: Save the processed dataset to CSV for Phase 3 (Model Development)
+
+Output File: processed_livable_cities.csv
+
+Export Details:
+  • Format: CSV (comma-separated values)
+  • Index: Not included (index=False)
+  • Rows: 150 cities
+  • Columns: 19 (Rank, City, Country, Country_Encoded, 15 features)
+  • File size: ~xx KB (depends on precision)
+
+Verification:
+  • Re-import the exported file
+  • Confirm shape matches (150 × 19)
+  • Verify data types are preserved
+  • Check no data corruption during export
+
+This file is the PRIMARY INPUT for Phase 3 (Model Development):
+  - Load processed_livable_cities.csv
+  - Extract features (X) and target (y = City column)
+  - Apply train-test split
+  - Train classification models
+
+
+SECTION 11: SUMMARY VISUALIZATION
+────────────────────────────────────────────────────────────────────────────────
+Purpose: Visual summary of Phase 2 preprocessing work
+
+Four-Panel Visualization:
+
+Panel 1: Missing Values - Before Processing
+  • Bar chart showing missing value counts per column
+  • Displays original data quality issues
+  • Annotation: "After: 0 missing" (shows transformation)
+
+Panel 2: Scaled Features Distribution
+  • Box plots for sample of scaled features
+  • Shows the result of StandardScaler
+  • Red dashed line at 0 (mean of scaled features)
+  • Demonstrates successful normalization
+
+Panel 3: Top 10 Cities
+  • Horizontal bar chart showing city frequency
+  • All cities appear once (one row per city)
+  • Shows the 150 unique cities that will be prediction classes
+
+Panel 4: Preprocessing Summary
+  • Text box with key statistics
+  • Dataset shape, missing values, encoding status
+  • Readiness confirmation for Phase 3
+
+Output File: preprocessing_summary.png
+  - Used for documentation
+  - Visual verification of preprocessing success
+
+
+SECTION 12: COMPLETION STATUS
+────────────────────────────────────────────────────────────────────────────────
+Purpose: Final status report and next steps summary
+
+Completion Summary:
+  ✓ Loaded raw merged dataset
+  ✓ Analyzed missing values (6 columns with missing data)
+  ✓ Applied country-wise mean imputation
+  ✓ Detected outliers using IQR method (kept for learning value)
+  ✓ Labeled encoded Country column
+  ✓ Standardized scaled all 15 numerical features
+  ✓ Created final processed dataset (150 × 19)
+  ✓ Exported processed_livable_cities.csv
+  ✓ Generated visualizations and summary
+
+Generated Files (4 total):
+  1. processed_livable_cities.csv
+     - Main output for Phase 3
+     - 150 cities × 19 columns
+     - 0 missing values, fully preprocessed
+
+  2. missing_values_analysis.png
+     - Visualization of original missing data patterns
+     - Confirms imputation was necessary
+
+  3. outliers_boxplots.png
+     - Box plots for all 15 numerical features
+     - Shows detected outliers (kept as-is)
+
+  4. preprocessing_summary.png
+     - Four-panel summary of preprocessing results
+
+Processing Statistics:
+  • Initial missing values: {count from Section 3}
+  • Final missing values: 0
+  • Outliers detected: {count from Section 6}
+  • Countries encoded: 16
+  • Features scaled: 15
+  • Target classes (cities): 150
+
+Next Phase: Phase 3 - Model Development & Training
+  Steps:
+  1. Load processed_livable_cities.csv
+  2. Separate features (X) and target (y = City)
+  3. Apply train-test split (stratified by City)
+  4. Train classification models (RandomForest, GradientBoosting, SVM, etc.)
+  5. Cross-validation and hyperparameter tuning
+  6. Model evaluation (Accuracy, Precision, Recall, F1-Score)
+  7. Feature importance analysis
+  8. Generate predictions for new data
+
+================================================================================
+KEY PREPROCESSING DECISIONS APPLIED
+================================================================================
+
+Decision 1: Sparse Column Imputation → Country-wise Mean
+  Reasoning: Preserves geographical/cultural patterns better than global mean
+
+Decision 2: Outlier Treatment → Keep As-Is
+  Reasoning: Outliers represent valuable real-world extremes; removal loses info
+
+Decision 3: Country Encoding → Label Encoding
+  Reasoning: Efficient, memory-friendly, works well with tree-based models
+
+Decision 4: Target Variable → City (150 classes)
+  Reasoning: Classification task predicts which city a person should live in
+
+Decision 5: Feature Scaling → StandardScaler
+  Reasoning: Normalizes features for ML algorithms; improves convergence
+
+================================================================================
+TROUBLESHOOTING & NOTES
+================================================================================
+
+Common Issues:
+  
+  1. Memory Error During Scaling:
+     - Dataset is small (150 × 19), shouldn't cause issues
+     - If occurs, check available RAM
+
+  2. Missing Data After Imputation:
+     - Check country-wise mean calculation
+     - Ensure fallback to global mean is applied
+     - Verify no NaN in final dataset
+
+  3. Encoding Issues:
+     - Confirm Country values are consistent (no typos/spaces)
+     - LabelEncoder expects clean categorical data
+
+  4. Scaling Verification:
+     - Mean should be ~1e-8 (essentially 0)
+     - Std should be ~1.0
+     - Minor variations due to floating-point precision are normal
+
+Next Steps:
+  Phase 3 uses processed_livable_cities.csv as input
+  Ensure this file exists before starting model development
+  Keep backup of this preprocessing notebook for reproducibility
+
+================================================================================
+END OF DOCUMENTATION
+================================================================================
