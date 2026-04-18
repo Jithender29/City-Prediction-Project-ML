@@ -55,7 +55,7 @@ Key Analysis:
   4. Sort by severity (highest % missing first)
 
 Expected Missing Columns:
-  • x1, x54: Cost of living metrics (~33% missing)
+  • Meal, Inexpensive Restaurant (USD); Average Monthly Net Salary (After Tax): Cost of living metrics (~33% missing)
   • Air_Pollution_2023: Air quality index (~47% missing)
   • Education, Taxation, Internet Access: Urban assessment scores (~27% missing)
   • Core livability indices: 0% missing (100% complete)
@@ -93,8 +93,8 @@ Feature Categories:
    - Will NOT require imputation
 
 2. SPARSE FEATURES (6 features - 27-47% missing):
-   • x1 (Cost metric 1)
-   • x54 (Cost metric 54)
+   • Meal, Inexpensive Restaurant (USD)
+   • Average Monthly Net Salary (After Tax)
    • Air_Pollution_2023 (Air quality 2023)
    • Education (Education index)
    • Taxation (Tax burden)
