@@ -1,12 +1,30 @@
 import pandas as pd
 
+MEAL_INEXPENSIVE_USD = "Meal, Inexpensive Restaurant (USD)"
+AVG_MONTHLY_NET_SALARY_AFTER_TAX = "Average Monthly Net Salary (After Tax)"
+
 # Load the central dataset
 livable_df = pd.read_csv('livable_cities.csv')
 livable_df['City'] = livable_df['City'].astype(str).str.strip()
 livable_df['Country'] = livable_df['Country'].astype(str).str.strip()
 
 # Load cost-of-living dataset and select relevant columns
-cost_df = pd.read_csv('cost-of-living.csv', usecols=['city', 'country', 'x1', 'x54'])
+_cost_path = 'cost-of-living.csv'
+_cost_header = pd.read_csv(_cost_path, nrows=0).columns.tolist()
+if 'x1' in _cost_header and 'x54' in _cost_header:
+    cost_df = pd.read_csv(_cost_path, usecols=['city', 'country', 'x1', 'x54'])
+    cost_df.rename(
+        columns={
+            'x1': MEAL_INEXPENSIVE_USD,
+            'x54': AVG_MONTHLY_NET_SALARY_AFTER_TAX,
+        },
+        inplace=True,
+    )
+else:
+    cost_df = pd.read_csv(
+        _cost_path,
+        usecols=['city', 'country', MEAL_INEXPENSIVE_USD, AVG_MONTHLY_NET_SALARY_AFTER_TAX],
+    )
 cost_df.rename(columns={'city': 'City', 'country': 'Country'}, inplace=True)
 cost_df['City'] = cost_df['City'].astype(str).str.strip()
 cost_df['Country'] = cost_df['Country'].astype(str).str.strip()

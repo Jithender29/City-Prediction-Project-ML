@@ -3,7 +3,7 @@ Preprocessing Tasks for Phase 1: Data Merging
 1. Loaded the central dataset 'livable_cities.csv' containing city livability indices (147 cities).
 
 2. From 'cost-of-living.csv':
-   - Selected columns: city, country, x1, x54
+   - Selected columns: city, country, Meal, Inexpensive Restaurant (USD), Average Monthly Net Salary (After Tax)
    - Renamed 'city' to 'City' and 'country' to 'Country' for consistency
    - Merged into livable_cities.csv on City and Country using left join
    - Successfully matched ~100 cities
@@ -28,7 +28,7 @@ Preprocessing Tasks for Phase 1: Data Merging
 
 Data Quality Summary:
 - Total rows in merged dataset: 150
-- Rows with cost-of-living x1 and x54: ~100
+- Rows with cost-of-living meal and net salary columns: ~100
 - Rows with air pollution 2023 data: ~80
 - Rows with Education, Taxation, Internet Access: 110
 

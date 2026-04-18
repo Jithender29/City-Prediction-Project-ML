@@ -1,0 +1,218 @@
+================================================================================
+PHASE 3 REPORT: FEATURE ENGINEERING + HYPERPARAMETER TUNING
+================================================================================
+
+Dataset shape: 150 rows x 18 columns
+Total modeling features used: 21
+Engineered features: Affordability_Balance, Health_Safety_Synergy, Environment_Balance, Education_Internet_Synergy, Mobility_Stress, Tax_Adjusted_Power
+
+Best model summary:
+- Best model: GradientBoosting
+- Best parameters: {'learning_rate': 0.1, 'max_depth': 2, 'min_samples_leaf': 1, 'n_estimators': 400, 'subsample': 0.8}
+- Best CV R2: 0.944931
+- Holdout R2: 0.922723
+- Holdout MAE: 9.857370
+
+ALL HYPERPARAMETER OUTCOMES (sorted by CV R2):
+001. Model=GradientBoosting | CV_R2=0.944931 | STD=0.016936 | Params={'learning_rate': 0.1, 'max_depth': 2, 'min_samples_leaf': 1, 'n_estimators': 400, 'subsample': 0.8}
+002. Model=GradientBoosting | CV_R2=0.944082 | STD=0.017463 | Params={'learning_rate': 0.1, 'max_depth': 2, 'min_samples_leaf': 2, 'n_estimators': 400, 'subsample': 0.8}
+003. Model=GradientBoosting | CV_R2=0.943344 | STD=0.017896 | Params={'learning_rate': 0.1, 'max_depth': 2, 'min_samples_leaf': 1, 'n_estimators': 200, 'subsample': 0.8}
+004. Model=GradientBoosting | CV_R2=0.942256 | STD=0.018155 | Params={'learning_rate': 0.1, 'max_depth': 2, 'min_samples_leaf': 2, 'n_estimators': 200, 'subsample': 0.8}
+005. Model=GradientBoosting | CV_R2=0.939779 | STD=0.015994 | Params={'learning_rate': 0.05, 'max_depth': 2, 'min_samples_leaf': 2, 'n_estimators': 400, 'subsample': 0.8}
+006. Model=GradientBoosting | CV_R2=0.938755 | STD=0.015928 | Params={'learning_rate': 0.03, 'max_depth': 2, 'min_samples_leaf': 2, 'n_estimators': 400, 'subsample': 0.8}
+007. Model=GradientBoosting | CV_R2=0.938370 | STD=0.017729 | Params={'learning_rate': 0.05, 'max_depth': 2, 'min_samples_leaf': 1, 'n_estimators': 400, 'subsample': 0.8}
+008. Model=GradientBoosting | CV_R2=0.937568 | STD=0.019056 | Params={'learning_rate': 0.1, 'max_depth': 2, 'min_samples_leaf': 1, 'n_estimators': 100, 'subsample': 0.8}
+009. Model=GradientBoosting | CV_R2=0.936848 | STD=0.016336 | Params={'learning_rate': 0.03, 'max_depth': 2, 'min_samples_leaf': 1, 'n_estimators': 400, 'subsample': 0.8}
+010. Model=GradientBoosting | CV_R2=0.936821 | STD=0.018844 | Params={'learning_rate': 0.1, 'max_depth': 2, 'min_samples_leaf': 2, 'n_estimators': 100, 'subsample': 0.8}
+011. Model=GradientBoosting | CV_R2=0.932661 | STD=0.009610 | Params={'learning_rate': 0.1, 'max_depth': 2, 'min_samples_leaf': 1, 'n_estimators': 400, 'subsample': 1.0}
+012. Model=GradientBoosting | CV_R2=0.931750 | STD=0.011457 | Params={'learning_rate': 0.1, 'max_depth': 2, 'min_samples_leaf': 2, 'n_estimators': 400, 'subsample': 1.0}
+013. Model=GradientBoosting | CV_R2=0.931209 | STD=0.019082 | Params={'learning_rate': 0.05, 'max_depth': 2, 'min_samples_leaf': 2, 'n_estimators': 200, 'subsample': 0.8}
+014. Model=GradientBoosting | CV_R2=0.930438 | STD=0.011085 | Params={'learning_rate': 0.1, 'max_depth': 2, 'min_samples_leaf': 1, 'n_estimators': 200, 'subsample': 1.0}
+015. Model=GradientBoosting | CV_R2=0.930347 | STD=0.020122 | Params={'learning_rate': 0.05, 'max_depth': 2, 'min_samples_leaf': 1, 'n_estimators': 200, 'subsample': 0.8}
+016. Model=GradientBoosting | CV_R2=0.930162 | STD=0.012741 | Params={'learning_rate': 0.1, 'max_depth': 3, 'min_samples_leaf': 1, 'n_estimators': 400, 'subsample': 0.8}
+017. Model=GradientBoosting | CV_R2=0.929946 | STD=0.012900 | Params={'learning_rate': 0.1, 'max_depth': 3, 'min_samples_leaf': 1, 'n_estimators': 200, 'subsample': 0.8}
+018. Model=GradientBoosting | CV_R2=0.929902 | STD=0.012583 | Params={'learning_rate': 0.05, 'max_depth': 2, 'min_samples_leaf': 2, 'n_estimators': 400, 'subsample': 1.0}
+019. Model=GradientBoosting | CV_R2=0.929745 | STD=0.009854 | Params={'learning_rate': 0.05, 'max_depth': 3, 'min_samples_leaf': 2, 'n_estimators': 400, 'subsample': 0.8}
+020. Model=GradientBoosting | CV_R2=0.929673 | STD=0.012651 | Params={'learning_rate': 0.03, 'max_depth': 3, 'min_samples_leaf': 2, 'n_estimators': 400, 'subsample': 0.8}
+021. Model=GradientBoosting | CV_R2=0.929538 | STD=0.012703 | Params={'learning_rate': 0.03, 'max_depth': 3, 'min_samples_leaf': 1, 'n_estimators': 400, 'subsample': 0.8}
+022. Model=GradientBoosting | CV_R2=0.929377 | STD=0.012548 | Params={'learning_rate': 0.1, 'max_depth': 2, 'min_samples_leaf': 2, 'n_estimators': 200, 'subsample': 1.0}
+023. Model=GradientBoosting | CV_R2=0.929136 | STD=0.012490 | Params={'learning_rate': 0.05, 'max_depth': 2, 'min_samples_leaf': 1, 'n_estimators': 400, 'subsample': 1.0}
+024. Model=GradientBoosting | CV_R2=0.928370 | STD=0.010565 | Params={'learning_rate': 0.05, 'max_depth': 3, 'min_samples_leaf': 1, 'n_estimators': 400, 'subsample': 0.8}
+025. Model=GradientBoosting | CV_R2=0.927958 | STD=0.014979 | Params={'learning_rate': 0.03, 'max_depth': 2, 'min_samples_leaf': 1, 'n_estimators': 400, 'subsample': 1.0}
+026. Model=GradientBoosting | CV_R2=0.927436 | STD=0.013189 | Params={'learning_rate': 0.1, 'max_depth': 3, 'min_samples_leaf': 1, 'n_estimators': 100, 'subsample': 0.8}
+027. Model=GradientBoosting | CV_R2=0.927296 | STD=0.010321 | Params={'learning_rate': 0.05, 'max_depth': 3, 'min_samples_leaf': 2, 'n_estimators': 200, 'subsample': 0.8}
+028. Model=GradientBoosting | CV_R2=0.927073 | STD=0.015202 | Params={'learning_rate': 0.03, 'max_depth': 2, 'min_samples_leaf': 2, 'n_estimators': 400, 'subsample': 1.0}
+029. Model=GradientBoosting | CV_R2=0.926163 | STD=0.011176 | Params={'learning_rate': 0.05, 'max_depth': 3, 'min_samples_leaf': 1, 'n_estimators': 200, 'subsample': 0.8}
+030. Model=GradientBoosting | CV_R2=0.924918 | STD=0.014061 | Params={'learning_rate': 0.1, 'max_depth': 2, 'min_samples_leaf': 1, 'n_estimators': 100, 'subsample': 1.0}
+031. Model=GradientBoosting | CV_R2=0.924698 | STD=0.011415 | Params={'learning_rate': 0.1, 'max_depth': 3, 'min_samples_leaf': 2, 'n_estimators': 400, 'subsample': 0.8}
+032. Model=GradientBoosting | CV_R2=0.924487 | STD=0.011460 | Params={'learning_rate': 0.1, 'max_depth': 3, 'min_samples_leaf': 2, 'n_estimators': 200, 'subsample': 0.8}
+033. Model=GradientBoosting | CV_R2=0.924256 | STD=0.014355 | Params={'learning_rate': 0.05, 'max_depth': 2, 'min_samples_leaf': 1, 'n_estimators': 200, 'subsample': 1.0}
+034. Model=GradientBoosting | CV_R2=0.924140 | STD=0.014892 | Params={'learning_rate': 0.1, 'max_depth': 2, 'min_samples_leaf': 2, 'n_estimators': 100, 'subsample': 1.0}
+035. Model=GradientBoosting | CV_R2=0.924121 | STD=0.015119 | Params={'learning_rate': 0.05, 'max_depth': 2, 'min_samples_leaf': 2, 'n_estimators': 200, 'subsample': 1.0}
+036. Model=GradientBoosting | CV_R2=0.922913 | STD=0.008490 | Params={'learning_rate': 0.05, 'max_depth': 4, 'min_samples_leaf': 1, 'n_estimators': 400, 'subsample': 0.8}
+037. Model=GradientBoosting | CV_R2=0.922738 | STD=0.014185 | Params={'learning_rate': 0.03, 'max_depth': 3, 'min_samples_leaf': 1, 'n_estimators': 200, 'subsample': 0.8}
+038. Model=GradientBoosting | CV_R2=0.922571 | STD=0.014077 | Params={'learning_rate': 0.03, 'max_depth': 3, 'min_samples_leaf': 2, 'n_estimators': 200, 'subsample': 0.8}
+039. Model=GradientBoosting | CV_R2=0.922499 | STD=0.011137 | Params={'learning_rate': 0.03, 'max_depth': 4, 'min_samples_leaf': 2, 'n_estimators': 400, 'subsample': 0.8}
+040. Model=GradientBoosting | CV_R2=0.922432 | STD=0.008768 | Params={'learning_rate': 0.05, 'max_depth': 4, 'min_samples_leaf': 1, 'n_estimators': 200, 'subsample': 0.8}
+041. Model=GradientBoosting | CV_R2=0.922140 | STD=0.019343 | Params={'learning_rate': 0.03, 'max_depth': 2, 'min_samples_leaf': 2, 'n_estimators': 200, 'subsample': 0.8}
+042. Model=GradientBoosting | CV_R2=0.921589 | STD=0.012169 | Params={'learning_rate': 0.1, 'max_depth': 3, 'min_samples_leaf': 2, 'n_estimators': 100, 'subsample': 0.8}
+043. Model=GradientBoosting | CV_R2=0.921408 | STD=0.019803 | Params={'learning_rate': 0.03, 'max_depth': 2, 'min_samples_leaf': 1, 'n_estimators': 200, 'subsample': 0.8}
+044. Model=GradientBoosting | CV_R2=0.920940 | STD=0.004385 | Params={'learning_rate': 0.1, 'max_depth': 4, 'min_samples_leaf': 1, 'n_estimators': 400, 'subsample': 0.8}
+045. Model=GradientBoosting | CV_R2=0.920938 | STD=0.010653 | Params={'learning_rate': 0.03, 'max_depth': 4, 'min_samples_leaf': 1, 'n_estimators': 400, 'subsample': 0.8}
+046. Model=GradientBoosting | CV_R2=0.920928 | STD=0.004388 | Params={'learning_rate': 0.1, 'max_depth': 4, 'min_samples_leaf': 1, 'n_estimators': 200, 'subsample': 0.8}
+047. Model=GradientBoosting | CV_R2=0.920390 | STD=0.004771 | Params={'learning_rate': 0.1, 'max_depth': 4, 'min_samples_leaf': 1, 'n_estimators': 100, 'subsample': 0.8}
+048. Model=GradientBoosting | CV_R2=0.919333 | STD=0.011663 | Params={'learning_rate': 0.03, 'max_depth': 4, 'min_samples_leaf': 2, 'n_estimators': 200, 'subsample': 0.8}
+049. Model=GradientBoosting | CV_R2=0.917633 | STD=0.010897 | Params={'learning_rate': 0.03, 'max_depth': 4, 'min_samples_leaf': 1, 'n_estimators': 200, 'subsample': 0.8}
+050. Model=GradientBoosting | CV_R2=0.917491 | STD=0.015957 | Params={'learning_rate': 0.05, 'max_depth': 4, 'min_samples_leaf': 2, 'n_estimators': 400, 'subsample': 0.8}
+051. Model=GradientBoosting | CV_R2=0.916987 | STD=0.010247 | Params={'learning_rate': 0.05, 'max_depth': 4, 'min_samples_leaf': 1, 'n_estimators': 100, 'subsample': 0.8}
+052. Model=GradientBoosting | CV_R2=0.916985 | STD=0.016122 | Params={'learning_rate': 0.05, 'max_depth': 4, 'min_samples_leaf': 2, 'n_estimators': 200, 'subsample': 0.8}
+053. Model=GradientBoosting | CV_R2=0.916867 | STD=0.012008 | Params={'learning_rate': 0.05, 'max_depth': 3, 'min_samples_leaf': 2, 'n_estimators': 100, 'subsample': 0.8}
+054. Model=GradientBoosting | CV_R2=0.916059 | STD=0.018990 | Params={'learning_rate': 0.1, 'max_depth': 3, 'min_samples_leaf': 2, 'n_estimators': 400, 'subsample': 1.0}
+055. Model=GradientBoosting | CV_R2=0.916025 | STD=0.012667 | Params={'learning_rate': 0.05, 'max_depth': 3, 'min_samples_leaf': 1, 'n_estimators': 100, 'subsample': 0.8}
+056. Model=GradientBoosting | CV_R2=0.915775 | STD=0.019020 | Params={'learning_rate': 0.1, 'max_depth': 3, 'min_samples_leaf': 2, 'n_estimators': 200, 'subsample': 1.0}
+057. Model=GradientBoosting | CV_R2=0.914865 | STD=0.010144 | Params={'learning_rate': 0.1, 'max_depth': 4, 'min_samples_leaf': 2, 'n_estimators': 400, 'subsample': 0.8}
+058. Model=GradientBoosting | CV_R2=0.914851 | STD=0.010125 | Params={'learning_rate': 0.1, 'max_depth': 4, 'min_samples_leaf': 2, 'n_estimators': 200, 'subsample': 0.8}
+059. Model=GradientBoosting | CV_R2=0.914243 | STD=0.010205 | Params={'learning_rate': 0.1, 'max_depth': 4, 'min_samples_leaf': 2, 'n_estimators': 100, 'subsample': 0.8}
+060. Model=GradientBoosting | CV_R2=0.913801 | STD=0.019480 | Params={'learning_rate': 0.1, 'max_depth': 3, 'min_samples_leaf': 2, 'n_estimators': 100, 'subsample': 1.0}
+061. Model=GradientBoosting | CV_R2=0.913015 | STD=0.018114 | Params={'learning_rate': 0.03, 'max_depth': 2, 'min_samples_leaf': 1, 'n_estimators': 200, 'subsample': 1.0}
+062. Model=GradientBoosting | CV_R2=0.912802 | STD=0.018113 | Params={'learning_rate': 0.03, 'max_depth': 2, 'min_samples_leaf': 2, 'n_estimators': 200, 'subsample': 1.0}
+063. Model=GradientBoosting | CV_R2=0.912533 | STD=0.017470 | Params={'learning_rate': 0.05, 'max_depth': 3, 'min_samples_leaf': 2, 'n_estimators': 400, 'subsample': 1.0}
+064. Model=GradientBoosting | CV_R2=0.911709 | STD=0.019368 | Params={'learning_rate': 0.1, 'max_depth': 3, 'min_samples_leaf': 1, 'n_estimators': 400, 'subsample': 1.0}
+065. Model=GradientBoosting | CV_R2=0.911668 | STD=0.021626 | Params={'learning_rate': 0.05, 'max_depth': 2, 'min_samples_leaf': 2, 'n_estimators': 100, 'subsample': 0.8}
+066. Model=GradientBoosting | CV_R2=0.911653 | STD=0.022301 | Params={'learning_rate': 0.05, 'max_depth': 2, 'min_samples_leaf': 1, 'n_estimators': 100, 'subsample': 0.8}
+067. Model=GradientBoosting | CV_R2=0.911594 | STD=0.017518 | Params={'learning_rate': 0.05, 'max_depth': 4, 'min_samples_leaf': 2, 'n_estimators': 100, 'subsample': 0.8}
+068. Model=GradientBoosting | CV_R2=0.911542 | STD=0.019538 | Params={'learning_rate': 0.1, 'max_depth': 3, 'min_samples_leaf': 1, 'n_estimators': 200, 'subsample': 1.0}
+069. Model=GradientBoosting | CV_R2=0.911235 | STD=0.018801 | Params={'learning_rate': 0.03, 'max_depth': 3, 'min_samples_leaf': 1, 'n_estimators': 400, 'subsample': 1.0}
+070. Model=GradientBoosting | CV_R2=0.910779 | STD=0.016805 | Params={'learning_rate': 0.03, 'max_depth': 3, 'min_samples_leaf': 2, 'n_estimators': 400, 'subsample': 1.0}
+071. Model=GradientBoosting | CV_R2=0.910205 | STD=0.019329 | Params={'learning_rate': 0.05, 'max_depth': 3, 'min_samples_leaf': 1, 'n_estimators': 400, 'subsample': 1.0}
+072. Model=GradientBoosting | CV_R2=0.910090 | STD=0.018582 | Params={'learning_rate': 0.05, 'max_depth': 3, 'min_samples_leaf': 2, 'n_estimators': 200, 'subsample': 1.0}
+073. Model=GradientBoosting | CV_R2=0.909342 | STD=0.020119 | Params={'learning_rate': 0.1, 'max_depth': 3, 'min_samples_leaf': 1, 'n_estimators': 100, 'subsample': 1.0}
+074. Model=GradientBoosting | CV_R2=0.908592 | STD=0.019577 | Params={'learning_rate': 0.05, 'max_depth': 3, 'min_samples_leaf': 1, 'n_estimators': 200, 'subsample': 1.0}
+075. Model=GradientBoosting | CV_R2=0.908060 | STD=0.013253 | Params={'learning_rate': 0.05, 'max_depth': 4, 'min_samples_leaf': 1, 'n_estimators': 400, 'subsample': 1.0}
+076. Model=GradientBoosting | CV_R2=0.907709 | STD=0.013438 | Params={'learning_rate': 0.05, 'max_depth': 4, 'min_samples_leaf': 1, 'n_estimators': 200, 'subsample': 1.0}
+077. Model=ExtraTrees | CV_R2=0.905408 | STD=0.022448 | Params={'max_depth': None, 'min_samples_leaf': 1, 'min_samples_split': 2, 'n_estimators': 200}
+078. Model=ExtraTrees | CV_R2=0.905181 | STD=0.022427 | Params={'max_depth': 16, 'min_samples_leaf': 1, 'min_samples_split': 2, 'n_estimators': 200}
+079. Model=GradientBoosting | CV_R2=0.905067 | STD=0.019373 | Params={'learning_rate': 0.03, 'max_depth': 3, 'min_samples_leaf': 1, 'n_estimators': 200, 'subsample': 1.0}
+080. Model=ExtraTrees | CV_R2=0.904880 | STD=0.022356 | Params={'max_depth': None, 'min_samples_leaf': 1, 'min_samples_split': 2, 'n_estimators': 800}
+081. Model=GradientBoosting | CV_R2=0.904814 | STD=0.014129 | Params={'learning_rate': 0.05, 'max_depth': 4, 'min_samples_leaf': 2, 'n_estimators': 400, 'subsample': 1.0}
+082. Model=ExtraTrees | CV_R2=0.904786 | STD=0.022219 | Params={'max_depth': 16, 'min_samples_leaf': 1, 'min_samples_split': 2, 'n_estimators': 800}
+083. Model=GradientBoosting | CV_R2=0.904665 | STD=0.017034 | Params={'learning_rate': 0.03, 'max_depth': 3, 'min_samples_leaf': 2, 'n_estimators': 200, 'subsample': 1.0}
+084. Model=ExtraTrees | CV_R2=0.904592 | STD=0.021995 | Params={'max_depth': None, 'min_samples_leaf': 1, 'min_samples_split': 2, 'n_estimators': 400}
+085. Model=ExtraTrees | CV_R2=0.904481 | STD=0.021890 | Params={'max_depth': 16, 'min_samples_leaf': 1, 'min_samples_split': 2, 'n_estimators': 400}
+086. Model=GradientBoosting | CV_R2=0.904434 | STD=0.014244 | Params={'learning_rate': 0.05, 'max_depth': 4, 'min_samples_leaf': 2, 'n_estimators': 200, 'subsample': 1.0}
+087. Model=GradientBoosting | CV_R2=0.904205 | STD=0.014396 | Params={'learning_rate': 0.05, 'max_depth': 4, 'min_samples_leaf': 1, 'n_estimators': 100, 'subsample': 1.0}
+088. Model=GradientBoosting | CV_R2=0.903943 | STD=0.017524 | Params={'learning_rate': 0.05, 'max_depth': 2, 'min_samples_leaf': 2, 'n_estimators': 100, 'subsample': 1.0}
+089. Model=GradientBoosting | CV_R2=0.903878 | STD=0.017619 | Params={'learning_rate': 0.05, 'max_depth': 2, 'min_samples_leaf': 1, 'n_estimators': 100, 'subsample': 1.0}
+090. Model=GradientBoosting | CV_R2=0.903467 | STD=0.011992 | Params={'learning_rate': 0.1, 'max_depth': 4, 'min_samples_leaf': 1, 'n_estimators': 400, 'subsample': 1.0}
+091. Model=GradientBoosting | CV_R2=0.903450 | STD=0.012000 | Params={'learning_rate': 0.1, 'max_depth': 4, 'min_samples_leaf': 1, 'n_estimators': 200, 'subsample': 1.0}
+092. Model=GradientBoosting | CV_R2=0.903165 | STD=0.012037 | Params={'learning_rate': 0.1, 'max_depth': 4, 'min_samples_leaf': 1, 'n_estimators': 100, 'subsample': 1.0}
+093. Model=GradientBoosting | CV_R2=0.903002 | STD=0.012920 | Params={'learning_rate': 0.03, 'max_depth': 4, 'min_samples_leaf': 1, 'n_estimators': 400, 'subsample': 1.0}
+094. Model=ExtraTrees | CV_R2=0.902296 | STD=0.024993 | Params={'max_depth': 8, 'min_samples_leaf': 1, 'min_samples_split': 2, 'n_estimators': 800}
+095. Model=GradientBoosting | CV_R2=0.901821 | STD=0.010561 | Params={'learning_rate': 0.03, 'max_depth': 4, 'min_samples_leaf': 2, 'n_estimators': 400, 'subsample': 1.0}
+096. Model=ExtraTrees | CV_R2=0.901392 | STD=0.021996 | Params={'max_depth': 16, 'min_samples_leaf': 1, 'min_samples_split': 5, 'n_estimators': 800}
+097. Model=ExtraTrees | CV_R2=0.901385 | STD=0.021993 | Params={'max_depth': None, 'min_samples_leaf': 1, 'min_samples_split': 5, 'n_estimators': 800}
+098. Model=ExtraTrees | CV_R2=0.901264 | STD=0.019876 | Params={'max_depth': 16, 'min_samples_leaf': 1, 'min_samples_split': 5, 'n_estimators': 200}
+099. Model=ExtraTrees | CV_R2=0.901232 | STD=0.019859 | Params={'max_depth': None, 'min_samples_leaf': 1, 'min_samples_split': 5, 'n_estimators': 200}
+100. Model=GradientBoosting | CV_R2=0.901113 | STD=0.018629 | Params={'learning_rate': 0.05, 'max_depth': 3, 'min_samples_leaf': 1, 'n_estimators': 100, 'subsample': 1.0}
+101. Model=ExtraTrees | CV_R2=0.900770 | STD=0.021839 | Params={'max_depth': 16, 'min_samples_leaf': 2, 'min_samples_split': 2, 'n_estimators': 800}
+102. Model=ExtraTrees | CV_R2=0.900767 | STD=0.021834 | Params={'max_depth': None, 'min_samples_leaf': 2, 'min_samples_split': 2, 'n_estimators': 800}
+103. Model=ExtraTrees | CV_R2=0.900659 | STD=0.024745 | Params={'max_depth': 8, 'min_samples_leaf': 1, 'min_samples_split': 2, 'n_estimators': 400}
+104. Model=ExtraTrees | CV_R2=0.900646 | STD=0.021428 | Params={'max_depth': 16, 'min_samples_leaf': 1, 'min_samples_split': 5, 'n_estimators': 400}
+105. Model=ExtraTrees | CV_R2=0.900632 | STD=0.021422 | Params={'max_depth': None, 'min_samples_leaf': 1, 'min_samples_split': 5, 'n_estimators': 400}
+106. Model=GradientBoosting | CV_R2=0.900597 | STD=0.019163 | Params={'learning_rate': 0.05, 'max_depth': 3, 'min_samples_leaf': 2, 'n_estimators': 100, 'subsample': 1.0}
+107. Model=GradientBoosting | CV_R2=0.900574 | STD=0.013919 | Params={'learning_rate': 0.03, 'max_depth': 4, 'min_samples_leaf': 1, 'n_estimators': 200, 'subsample': 1.0}
+108. Model=GradientBoosting | CV_R2=0.900474 | STD=0.015097 | Params={'learning_rate': 0.03, 'max_depth': 4, 'min_samples_leaf': 2, 'n_estimators': 100, 'subsample': 0.8}
+109. Model=ExtraTrees | CV_R2=0.900118 | STD=0.024329 | Params={'max_depth': 8, 'min_samples_leaf': 1, 'min_samples_split': 2, 'n_estimators': 200}
+110. Model=ExtraTrees | CV_R2=0.900051 | STD=0.020332 | Params={'max_depth': 16, 'min_samples_leaf': 2, 'min_samples_split': 2, 'n_estimators': 200}
+111. Model=ExtraTrees | CV_R2=0.900036 | STD=0.020307 | Params={'max_depth': None, 'min_samples_leaf': 2, 'min_samples_split': 2, 'n_estimators': 200}
+112. Model=GradientBoosting | CV_R2=0.899730 | STD=0.011152 | Params={'learning_rate': 0.03, 'max_depth': 4, 'min_samples_leaf': 2, 'n_estimators': 200, 'subsample': 1.0}
+113. Model=ExtraTrees | CV_R2=0.899391 | STD=0.024089 | Params={'max_depth': 8, 'min_samples_leaf': 1, 'min_samples_split': 5, 'n_estimators': 800}
+114. Model=ExtraTrees | CV_R2=0.899352 | STD=0.021879 | Params={'max_depth': 8, 'min_samples_leaf': 2, 'min_samples_split': 2, 'n_estimators': 800}
+115. Model=GradientBoosting | CV_R2=0.899232 | STD=0.015150 | Params={'learning_rate': 0.05, 'max_depth': 4, 'min_samples_leaf': 2, 'n_estimators': 100, 'subsample': 1.0}
+116. Model=ExtraTrees | CV_R2=0.898289 | STD=0.021307 | Params={'max_depth': 16, 'min_samples_leaf': 2, 'min_samples_split': 2, 'n_estimators': 400}
+117. Model=ExtraTrees | CV_R2=0.898282 | STD=0.021296 | Params={'max_depth': None, 'min_samples_leaf': 2, 'min_samples_split': 2, 'n_estimators': 400}
+118. Model=GradientBoosting | CV_R2=0.898032 | STD=0.014356 | Params={'learning_rate': 0.03, 'max_depth': 4, 'min_samples_leaf': 1, 'n_estimators': 100, 'subsample': 0.8}
+119. Model=ExtraTrees | CV_R2=0.897629 | STD=0.020604 | Params={'max_depth': 8, 'min_samples_leaf': 2, 'min_samples_split': 2, 'n_estimators': 200}
+120. Model=ExtraTrees | CV_R2=0.897611 | STD=0.024068 | Params={'max_depth': 8, 'min_samples_leaf': 1, 'min_samples_split': 5, 'n_estimators': 400}
+121. Model=ExtraTrees | CV_R2=0.897604 | STD=0.023818 | Params={'max_depth': None, 'min_samples_leaf': 2, 'min_samples_split': 5, 'n_estimators': 800}
+122. Model=ExtraTrees | CV_R2=0.897604 | STD=0.023818 | Params={'max_depth': 16, 'min_samples_leaf': 2, 'min_samples_split': 5, 'n_estimators': 800}
+123. Model=ExtraTrees | CV_R2=0.897570 | STD=0.021053 | Params={'max_depth': 8, 'min_samples_leaf': 2, 'min_samples_split': 2, 'n_estimators': 400}
+124. Model=ExtraTrees | CV_R2=0.896814 | STD=0.024362 | Params={'max_depth': 8, 'min_samples_leaf': 1, 'min_samples_split': 5, 'n_estimators': 200}
+125. Model=ExtraTrees | CV_R2=0.896531 | STD=0.024026 | Params={'max_depth': None, 'min_samples_leaf': 2, 'min_samples_split': 5, 'n_estimators': 400}
+126. Model=ExtraTrees | CV_R2=0.896531 | STD=0.024026 | Params={'max_depth': 16, 'min_samples_leaf': 2, 'min_samples_split': 5, 'n_estimators': 400}
+127. Model=ExtraTrees | CV_R2=0.896284 | STD=0.024793 | Params={'max_depth': 8, 'min_samples_leaf': 2, 'min_samples_split': 5, 'n_estimators': 800}
+128. Model=GradientBoosting | CV_R2=0.895867 | STD=0.018359 | Params={'learning_rate': 0.1, 'max_depth': 4, 'min_samples_leaf': 2, 'n_estimators': 400, 'subsample': 1.0}
+129. Model=GradientBoosting | CV_R2=0.895858 | STD=0.018366 | Params={'learning_rate': 0.1, 'max_depth': 4, 'min_samples_leaf': 2, 'n_estimators': 200, 'subsample': 1.0}
+130. Model=ExtraTrees | CV_R2=0.895659 | STD=0.024759 | Params={'max_depth': 8, 'min_samples_leaf': 2, 'min_samples_split': 5, 'n_estimators': 400}
+131. Model=GradientBoosting | CV_R2=0.895459 | STD=0.018514 | Params={'learning_rate': 0.1, 'max_depth': 4, 'min_samples_leaf': 2, 'n_estimators': 100, 'subsample': 1.0}
+132. Model=ExtraTrees | CV_R2=0.895366 | STD=0.023559 | Params={'max_depth': None, 'min_samples_leaf': 2, 'min_samples_split': 5, 'n_estimators': 200}
+133. Model=ExtraTrees | CV_R2=0.895366 | STD=0.023559 | Params={'max_depth': 16, 'min_samples_leaf': 2, 'min_samples_split': 5, 'n_estimators': 200}
+134. Model=ExtraTrees | CV_R2=0.894954 | STD=0.024825 | Params={'max_depth': 8, 'min_samples_leaf': 2, 'min_samples_split': 5, 'n_estimators': 200}
+135. Model=GradientBoosting | CV_R2=0.891977 | STD=0.017491 | Params={'learning_rate': 0.03, 'max_depth': 3, 'min_samples_leaf': 1, 'n_estimators': 100, 'subsample': 0.8}
+136. Model=GradientBoosting | CV_R2=0.891300 | STD=0.017745 | Params={'learning_rate': 0.03, 'max_depth': 3, 'min_samples_leaf': 2, 'n_estimators': 100, 'subsample': 0.8}
+137. Model=GradientBoosting | CV_R2=0.884185 | STD=0.014827 | Params={'learning_rate': 0.03, 'max_depth': 4, 'min_samples_leaf': 2, 'n_estimators': 100, 'subsample': 1.0}
+138. Model=GradientBoosting | CV_R2=0.884088 | STD=0.019253 | Params={'learning_rate': 0.03, 'max_depth': 4, 'min_samples_leaf': 1, 'n_estimators': 100, 'subsample': 1.0}
+139. Model=RandomForest | CV_R2=0.878718 | STD=0.019200 | Params={'max_depth': 8, 'min_samples_leaf': 1, 'min_samples_split': 2, 'n_estimators': 400}
+140. Model=RandomForest | CV_R2=0.878567 | STD=0.019023 | Params={'max_depth': None, 'min_samples_leaf': 1, 'min_samples_split': 2, 'n_estimators': 400}
+141. Model=RandomForest | CV_R2=0.878567 | STD=0.019023 | Params={'max_depth': 16, 'min_samples_leaf': 1, 'min_samples_split': 2, 'n_estimators': 400}
+142. Model=RandomForest | CV_R2=0.878422 | STD=0.016859 | Params={'max_depth': None, 'min_samples_leaf': 2, 'min_samples_split': 2, 'n_estimators': 400}
+143. Model=RandomForest | CV_R2=0.878422 | STD=0.016859 | Params={'max_depth': 16, 'min_samples_leaf': 2, 'min_samples_split': 2, 'n_estimators': 400}
+144. Model=RandomForest | CV_R2=0.878296 | STD=0.016816 | Params={'max_depth': 8, 'min_samples_leaf': 2, 'min_samples_split': 2, 'n_estimators': 400}
+145. Model=RandomForest | CV_R2=0.877834 | STD=0.019594 | Params={'max_depth': None, 'min_samples_leaf': 1, 'min_samples_split': 2, 'n_estimators': 800}
+146. Model=RandomForest | CV_R2=0.877834 | STD=0.019594 | Params={'max_depth': 16, 'min_samples_leaf': 1, 'min_samples_split': 2, 'n_estimators': 800}
+147. Model=GradientBoosting | CV_R2=0.877771 | STD=0.018747 | Params={'learning_rate': 0.03, 'max_depth': 3, 'min_samples_leaf': 2, 'n_estimators': 100, 'subsample': 1.0}
+148. Model=RandomForest | CV_R2=0.877628 | STD=0.019517 | Params={'max_depth': 8, 'min_samples_leaf': 1, 'min_samples_split': 2, 'n_estimators': 800}
+149. Model=RandomForest | CV_R2=0.877445 | STD=0.017592 | Params={'max_depth': None, 'min_samples_leaf': 2, 'min_samples_split': 2, 'n_estimators': 800}
+150. Model=RandomForest | CV_R2=0.877445 | STD=0.017592 | Params={'max_depth': 16, 'min_samples_leaf': 2, 'min_samples_split': 2, 'n_estimators': 800}
+151. Model=RandomForest | CV_R2=0.877370 | STD=0.017497 | Params={'max_depth': 8, 'min_samples_leaf': 2, 'min_samples_split': 2, 'n_estimators': 800}
+152. Model=GradientBoosting | CV_R2=0.877104 | STD=0.019022 | Params={'learning_rate': 0.03, 'max_depth': 3, 'min_samples_leaf': 1, 'n_estimators': 100, 'subsample': 1.0}
+153. Model=RandomForest | CV_R2=0.877094 | STD=0.017658 | Params={'max_depth': None, 'min_samples_leaf': 2, 'min_samples_split': 5, 'n_estimators': 400}
+154. Model=RandomForest | CV_R2=0.877094 | STD=0.017658 | Params={'max_depth': 16, 'min_samples_leaf': 2, 'min_samples_split': 5, 'n_estimators': 400}
+155. Model=RandomForest | CV_R2=0.877078 | STD=0.017341 | Params={'max_depth': None, 'min_samples_leaf': 1, 'min_samples_split': 5, 'n_estimators': 400}
+156. Model=RandomForest | CV_R2=0.877078 | STD=0.017341 | Params={'max_depth': 16, 'min_samples_leaf': 1, 'min_samples_split': 5, 'n_estimators': 400}
+157. Model=RandomForest | CV_R2=0.877033 | STD=0.017401 | Params={'max_depth': 8, 'min_samples_leaf': 2, 'min_samples_split': 5, 'n_estimators': 400}
+158. Model=RandomForest | CV_R2=0.876895 | STD=0.017368 | Params={'max_depth': 8, 'min_samples_leaf': 1, 'min_samples_split': 5, 'n_estimators': 400}
+159. Model=RandomForest | CV_R2=0.876715 | STD=0.018007 | Params={'max_depth': None, 'min_samples_leaf': 1, 'min_samples_split': 2, 'n_estimators': 200}
+160. Model=RandomForest | CV_R2=0.876715 | STD=0.018007 | Params={'max_depth': 16, 'min_samples_leaf': 1, 'min_samples_split': 2, 'n_estimators': 200}
+161. Model=RandomForest | CV_R2=0.876383 | STD=0.018538 | Params={'max_depth': 8, 'min_samples_leaf': 1, 'min_samples_split': 5, 'n_estimators': 800}
+162. Model=RandomForest | CV_R2=0.876378 | STD=0.018453 | Params={'max_depth': None, 'min_samples_leaf': 1, 'min_samples_split': 5, 'n_estimators': 800}
+163. Model=RandomForest | CV_R2=0.876378 | STD=0.018453 | Params={'max_depth': 16, 'min_samples_leaf': 1, 'min_samples_split': 5, 'n_estimators': 800}
+164. Model=RandomForest | CV_R2=0.876345 | STD=0.018458 | Params={'max_depth': 8, 'min_samples_leaf': 1, 'min_samples_split': 2, 'n_estimators': 200}
+165. Model=RandomForest | CV_R2=0.876215 | STD=0.015478 | Params={'max_depth': None, 'min_samples_leaf': 2, 'min_samples_split': 2, 'n_estimators': 200}
+166. Model=RandomForest | CV_R2=0.876215 | STD=0.015478 | Params={'max_depth': 16, 'min_samples_leaf': 2, 'min_samples_split': 2, 'n_estimators': 200}
+167. Model=RandomForest | CV_R2=0.876144 | STD=0.018468 | Params={'max_depth': None, 'min_samples_leaf': 2, 'min_samples_split': 5, 'n_estimators': 800}
+168. Model=RandomForest | CV_R2=0.876144 | STD=0.018468 | Params={'max_depth': 16, 'min_samples_leaf': 2, 'min_samples_split': 5, 'n_estimators': 800}
+169. Model=RandomForest | CV_R2=0.876068 | STD=0.018301 | Params={'max_depth': 8, 'min_samples_leaf': 2, 'min_samples_split': 5, 'n_estimators': 800}
+170. Model=RandomForest | CV_R2=0.875992 | STD=0.015426 | Params={'max_depth': 8, 'min_samples_leaf': 2, 'min_samples_split': 2, 'n_estimators': 200}
+171. Model=RandomForest | CV_R2=0.875582 | STD=0.017015 | Params={'max_depth': 8, 'min_samples_leaf': 1, 'min_samples_split': 5, 'n_estimators': 200}
+172. Model=RandomForest | CV_R2=0.875347 | STD=0.017221 | Params={'max_depth': None, 'min_samples_leaf': 1, 'min_samples_split': 5, 'n_estimators': 200}
+173. Model=RandomForest | CV_R2=0.875347 | STD=0.017221 | Params={'max_depth': 16, 'min_samples_leaf': 1, 'min_samples_split': 5, 'n_estimators': 200}
+174. Model=RandomForest | CV_R2=0.875251 | STD=0.017244 | Params={'max_depth': None, 'min_samples_leaf': 2, 'min_samples_split': 5, 'n_estimators': 200}
+175. Model=RandomForest | CV_R2=0.875251 | STD=0.017244 | Params={'max_depth': 16, 'min_samples_leaf': 2, 'min_samples_split': 5, 'n_estimators': 200}
+176. Model=RandomForest | CV_R2=0.875194 | STD=0.017085 | Params={'max_depth': 8, 'min_samples_leaf': 2, 'min_samples_split': 5, 'n_estimators': 200}
+177. Model=GradientBoosting | CV_R2=0.872696 | STD=0.024947 | Params={'learning_rate': 0.03, 'max_depth': 2, 'min_samples_leaf': 2, 'n_estimators': 100, 'subsample': 0.8}
+178. Model=GradientBoosting | CV_R2=0.871431 | STD=0.025525 | Params={'learning_rate': 0.03, 'max_depth': 2, 'min_samples_leaf': 1, 'n_estimators': 100, 'subsample': 0.8}
+179. Model=GradientBoosting | CV_R2=0.862976 | STD=0.025408 | Params={'learning_rate': 0.03, 'max_depth': 2, 'min_samples_leaf': 2, 'n_estimators': 100, 'subsample': 1.0}
+180. Model=GradientBoosting | CV_R2=0.862475 | STD=0.025927 | Params={'learning_rate': 0.03, 'max_depth': 2, 'min_samples_leaf': 1, 'n_estimators': 100, 'subsample': 1.0}
+
+Top feature importances:
+- Pollution Index: 0.48742515
+- Purchasing Power Index: 0.17732689
+- Cost of Living Index: 0.12975880
+- Property Price to Income Ratio: 0.05719200
+- Environment_Balance: 0.04673843
+- Safety Index: 0.03296829
+- Traffic Commute Time Index: 0.01303153
+- Tax_Adjusted_Power: 0.00891337
+- Country_Encoded: 0.00865215
+- Internet Access: 0.00696069
+- Health Care Index: 0.00670496
+- Average Monthly Net Salary (After Tax): 0.00557251
+- Climate Index: 0.00477281
+- Education: 0.00434706
+- Health_Safety_Synergy: 0.00288685
+
+Generated visualizations:
+- phase3_model_comparison.png
+- phase3_actual_vs_predicted.png
+- phase3_feature_importance.png

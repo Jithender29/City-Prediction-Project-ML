@@ -39,9 +39,12 @@ Output:
   • First 5 rows preview
 
 Context:
-  The merged dataset contains 150 cities with 18 columns (1 ranking + 1 identifier
-  + 1 grouping + 15 numerical features). This is the starting point for all
+  The merged dataset contains 150 cities with 17 columns (1 ranking + 1 identifier
+  + 1 grouping + 14 numerical features). This is the starting point for all
   preprocessing operations.
+
+  Note: One highly rank-correlated composite livability index was excluded so
+  downstream models are not dominated by a near-duplicate of the ranking target.
 
 
 SECTION 3: MISSING VALUE ANALYSIS
@@ -55,7 +58,7 @@ Key Analysis:
   4. Sort by severity (highest % missing first)
 
 Expected Missing Columns:
-  • x1, x54: Cost of living metrics (~33% missing)
+  • Meal, Inexpensive Restaurant (USD); Average Monthly Net Salary (After Tax): Cost of living metrics (~33% missing)
   • Air_Pollution_2023: Air quality index (~47% missing)
   • Education, Taxation, Internet Access: Urban assessment scores (~27% missing)
   • Core livability indices: 0% missing (100% complete)
@@ -76,8 +79,7 @@ Purpose: Categorize numerical features into groups based on completeness
 
 Feature Categories:
 
-1. CORE FEATURES (9 features - 100% complete):
-   • Quality of Life Index
+1. CORE FEATURES (8 features - 100% complete):
    • Purchasing Power Index
    • Safety Index
    • Health Care Index
@@ -93,8 +95,8 @@ Feature Categories:
    - Will NOT require imputation
 
 2. SPARSE FEATURES (6 features - 27-47% missing):
-   • x1 (Cost metric 1)
-   • x54 (Cost metric 54)
+   • Meal, Inexpensive Restaurant (USD)
+   • Average Monthly Net Salary (After Tax)
    • Air_Pollution_2023 (Air quality 2023)
    • Education (Education index)
    • Taxation (Tax burden)
@@ -138,7 +140,7 @@ LEVEL 2: Global Mean (Fallback)
 
 Result:
   ✓ Zero missing values after this step
-  ✓ All 15 numerical features are complete
+  ✓ All 14 numerical features are complete
   ✓ Ready for scaling and encoding
 
 
@@ -169,7 +171,7 @@ Decision Applied: KEEP OUTLIERS AS-IS
     - Examples: Zurich (expensive), Luxembourg (small), etc.
 
 Visualization:
-  • Box plots for all 15 features (3×5 grid)
+  • Box plots for all 14 features (grid layout)
   • Red titles indicate features with detected outliers
   • Helps visually inspect outlier patterns
 
@@ -214,8 +216,8 @@ Method: StandardScaler (Z-score Normalization)
 Formula for each feature value x:
   x_scaled = (x - mean) / standard_deviation
 
-Applied to ALL 15 numerical features:
-  • 9 core features (already complete)
+Applied to ALL 14 numerical features:
+  • 8 core features (already complete)
   • 6 sparse features (already imputed)
 
 Scaling Process:
@@ -259,14 +261,14 @@ Final Dataset Structure:
     - Label-encoded country (0-15)
     - Used in model features (numerical)
 
-  Columns 5-19: 15 Scaled Numerical Features
+  Columns 5-18: 14 Scaled Numerical Features
     - All scaled to mean≈0, std≈1
     - Core features (100% complete, no imputation needed)
     - Sparse features (imputed, then scaled)
     - Ready for ML models
 
 Dataset Properties:
-  • Shape: 150 rows × 19 columns
+  • Shape: 150 rows × 18 columns
   • Missing values: 0 (100% complete)
   • Data types: int, str, float (all standardized)
   • Ready for train-test split and model training
@@ -282,12 +284,12 @@ Export Details:
   • Format: CSV (comma-separated values)
   • Index: Not included (index=False)
   • Rows: 150 cities
-  • Columns: 19 (Rank, City, Country, Country_Encoded, 15 features)
+  • Columns: 18 (Rank, City, Country, Country_Encoded, 14 features)
   • File size: ~xx KB (depends on precision)
 
 Verification:
   • Re-import the exported file
-  • Confirm shape matches (150 × 19)
+  • Confirm shape matches (150 × 18)
   • Verify data types are preserved
   • Check no data corruption during export
 
@@ -340,15 +342,15 @@ Completion Summary:
   ✓ Applied country-wise mean imputation
   ✓ Detected outliers using IQR method (kept for learning value)
   ✓ Labeled encoded Country column
-  ✓ Standardized scaled all 15 numerical features
-  ✓ Created final processed dataset (150 × 19)
+  ✓ Standardized scaled all 14 numerical features
+  ✓ Created final processed dataset (150 × 18)
   ✓ Exported processed_livable_cities.csv
   ✓ Generated visualizations and summary
 
 Generated Files (4 total):
   1. processed_livable_cities.csv
      - Main output for Phase 3
-     - 150 cities × 19 columns
+     - 150 cities × 18 columns
      - 0 missing values, fully preprocessed
 
   2. missing_values_analysis.png
@@ -356,7 +358,7 @@ Generated Files (4 total):
      - Confirms imputation was necessary
 
   3. outliers_boxplots.png
-     - Box plots for all 15 numerical features
+     - Box plots for all 14 numerical features
      - Shows detected outliers (kept as-is)
 
   4. preprocessing_summary.png
@@ -367,7 +369,7 @@ Processing Statistics:
   • Final missing values: 0
   • Outliers detected: {count from Section 6}
   • Countries encoded: 16
-  • Features scaled: 15
+  • Features scaled: 14
   • Target classes (cities): 150
 
 Next Phase: Phase 3 - Model Development & Training
@@ -407,7 +409,7 @@ TROUBLESHOOTING & NOTES
 Common Issues:
   
   1. Memory Error During Scaling:
-     - Dataset is small (150 × 19), shouldn't cause issues
+     - Dataset is small (150 × 18), shouldn't cause issues
      - If occurs, check available RAM
 
   2. Missing Data After Imputation:
