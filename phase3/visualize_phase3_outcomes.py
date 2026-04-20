@@ -5,6 +5,9 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 
+ROOT_DIR = Path(__file__).resolve().parents[1]
+OUTPUT_DIR = ROOT_DIR / "outputs" / "phase3"
+
 
 def _parse_params_column(df: pd.DataFrame) -> pd.DataFrame:
     parsed_rows = []
@@ -99,17 +102,18 @@ def _save_gb_heatmap(df: pd.DataFrame, out_path: Path) -> None:
 
 def main() -> None:
     sns.set_theme(style="whitegrid")
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
-    csv_path = Path("phase3_all_hyperparameter_outcomes.csv")
+    csv_path = OUTPUT_DIR / "phase3_all_hyperparameter_outcomes.csv"
     if not csv_path.exists():
         raise FileNotFoundError(f"Could not find {csv_path}")
 
     outcomes = pd.read_csv(csv_path)
     enriched = _parse_params_column(outcomes)
 
-    _save_cv_distribution_by_model(enriched, Path("phase3_cv_r2_distribution_by_model.png"))
-    _save_top_configs(enriched, Path("phase3_top20_hyperparameter_configs.png"), top_n=20)
-    _save_gb_heatmap(enriched, Path("phase3_gb_heatmap_lr_vs_estimators.png"))
+    _save_cv_distribution_by_model(enriched, OUTPUT_DIR / "phase3_cv_r2_distribution_by_model.png")
+    _save_top_configs(enriched, OUTPUT_DIR / "phase3_top20_hyperparameter_configs.png", top_n=20)
+    _save_gb_heatmap(enriched, OUTPUT_DIR / "phase3_gb_heatmap_lr_vs_estimators.png")
 
     print("Generated visualizations:")
     print("- phase3_cv_r2_distribution_by_model.png")

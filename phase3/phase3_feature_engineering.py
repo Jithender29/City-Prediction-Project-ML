@@ -1,7 +1,11 @@
 import pandas as pd
+from pathlib import Path
 from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.metrics import mean_absolute_error, r2_score
 from sklearn.model_selection import KFold, cross_validate, train_test_split
+
+ROOT_DIR = Path(__file__).resolve().parents[1]
+PROCESSED_DIR = ROOT_DIR / "data" / "processed"
 
 
 def add_engineered_features(df: pd.DataFrame) -> pd.DataFrame:
@@ -31,7 +35,7 @@ def add_engineered_features(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def main() -> None:
-    df = pd.read_csv("processed_livable_cities.csv")
+    df = pd.read_csv(PROCESSED_DIR / "processed_livable_cities.csv")
     df = add_engineered_features(df)
 
     # Use rank-derived score as target for recommendation.

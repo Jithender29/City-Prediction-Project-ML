@@ -1,9 +1,14 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from pathlib import Path
 
 import pandas as pd
 from sklearn.ensemble import GradientBoostingRegressor
+
+ROOT_DIR = Path(__file__).resolve().parents[1]
+PROCESSED_DIR = ROOT_DIR / "data" / "processed"
+OUTPUT_DIR = ROOT_DIR / "outputs" / "phase3"
 
 
 @dataclass
@@ -141,7 +146,8 @@ def recommend_cities(
 
 
 def main() -> None:
-    df = pd.read_csv("processed_livable_cities.csv")
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    df = pd.read_csv(PROCESSED_DIR / "processed_livable_cities.csv")
     model, feature_cols, _ = train_model(df)
 
     attributes = {
@@ -185,8 +191,8 @@ def main() -> None:
             f"Final={row['Final_Suitability_Score']:.4f}"
         )
 
-    ranked.to_csv("city_recommendation_results.csv", index=False)
-    print("\nSaved full ranked list to city_recommendation_results.csv")
+    ranked.to_csv(OUTPUT_DIR / "city_recommendation_results.csv", index=False)
+    print("\nSaved full ranked list to outputs/phase3/city_recommendation_results.csv")
 
 
 if __name__ == "__main__":
