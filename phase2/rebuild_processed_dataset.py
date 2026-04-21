@@ -3,7 +3,13 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
+from pathlib import Path
 from sklearn.preprocessing import LabelEncoder, StandardScaler
+
+ROOT_DIR = Path(__file__).resolve().parents[1]
+INTERIM_DIR = ROOT_DIR / "data" / "interim"
+PROCESSED_DIR = ROOT_DIR / "data" / "processed"
+OUTPUT_DIR = ROOT_DIR / "outputs" / "phase2"
 
 CORE_FEATURES = [
     "Purchasing Power Index",
@@ -36,7 +42,7 @@ def _save_missing_values_plot(df_raw: pd.DataFrame) -> None:
     plt.xlabel("Missing count")
     plt.title("Missing values by column (before imputation)")
     plt.tight_layout()
-    plt.savefig("missing_values_analysis.png", dpi=300)
+    plt.savefig(OUTPUT_DIR / "missing_values_analysis.png", dpi=300)
     plt.close()
 
 
@@ -56,7 +62,7 @@ def _save_outlier_boxplots(df_imp: pd.DataFrame) -> None:
         axes[j].set_visible(False)
     plt.suptitle("Feature distributions (after imputation, before scaling)", y=1.02)
     plt.tight_layout()
-    plt.savefig("outliers_boxplots.png", dpi=300)
+    plt.savefig(OUTPUT_DIR / "outliers_boxplots.png", dpi=300)
     plt.close()
 
 
@@ -107,13 +113,16 @@ def _save_preprocessing_summary(df_merged: pd.DataFrame, final_df: pd.DataFrame)
     axes[1, 1].set_title("Summary")
 
     plt.tight_layout()
-    plt.savefig("preprocessing_summary.png", dpi=300)
+    plt.savefig(OUTPUT_DIR / "preprocessing_summary.png", dpi=300)
     plt.close()
 
 
 def main() -> None:
     sns.set_style("whitegrid")
-    df = pd.read_csv("merged_livable_cities.csv")
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    PROCESSED_DIR.mkdir(parents=True, exist_ok=True)
+
+    df = pd.read_csv(INTERIM_DIR / "merged_livable_cities.csv")
     _save_missing_values_plot(df)
     df_processed = df.copy()
 
@@ -136,8 +145,8 @@ def main() -> None:
     final_df = df_scaled[
         ["Rank", "City", "Country", "Country_Encoded"] + ALL_NUMERIC
     ].copy()
-    final_df.to_csv("processed_livable_cities.csv", index=False)
-    print("Wrote processed_livable_cities.csv", final_df.shape)
+    final_df.to_csv(PROCESSED_DIR / "processed_livable_cities.csv", index=False)
+    print("Wrote data/processed/processed_livable_cities.csv", final_df.shape)
 
     _save_preprocessing_summary(df, final_df)
 

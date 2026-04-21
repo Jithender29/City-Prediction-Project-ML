@@ -1,4 +1,5 @@
 import warnings
+from pathlib import Path
 
 warnings.filterwarnings("ignore")
 
@@ -12,6 +13,10 @@ from sklearn.ensemble import (
 )
 from sklearn.metrics import mean_absolute_error, r2_score
 from sklearn.model_selection import GridSearchCV, KFold, train_test_split
+
+ROOT_DIR = Path(__file__).resolve().parents[1]
+PROCESSED_DIR = ROOT_DIR / "data" / "processed"
+OUTPUT_DIR = ROOT_DIR / "outputs" / "phase3"
 
 
 def add_engineered_features(data: pd.DataFrame) -> pd.DataFrame:
@@ -37,8 +42,9 @@ def add_engineered_features(data: pd.DataFrame) -> pd.DataFrame:
 def main() -> None:
     sns.set_style("whitegrid")
     plt.rcParams["figure.figsize"] = (11, 6)
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
-    df = pd.read_csv("processed_livable_cities.csv")
+    df = pd.read_csv(PROCESSED_DIR / "processed_livable_cities.csv")
     model_df = add_engineered_features(df)
 
     max_rank = model_df["Rank"].max()
@@ -135,7 +141,7 @@ def main() -> None:
     plt.ylabel("Best CV R2")
     plt.xlabel("Model")
     plt.tight_layout()
-    plt.savefig("phase3_model_comparison.png", dpi=300)
+    plt.savefig(OUTPUT_DIR / "phase3_model_comparison.png", dpi=300)
     plt.close()
 
     plt.figure(figsize=(6, 6))
@@ -147,7 +153,7 @@ def main() -> None:
     plt.xlabel("Actual")
     plt.ylabel("Predicted")
     plt.tight_layout()
-    plt.savefig("phase3_actual_vs_predicted.png", dpi=300)
+    plt.savefig(OUTPUT_DIR / "phase3_actual_vs_predicted.png", dpi=300)
     plt.close()
 
     top_fi = feature_importance_df.head(12)
@@ -155,7 +161,7 @@ def main() -> None:
     sns.barplot(data=top_fi, y="Feature", x="Importance", palette="magma")
     plt.title(f"Top Feature Importances ({best_model_name})")
     plt.tight_layout()
-    plt.savefig("phase3_feature_importance.png", dpi=300)
+    plt.savefig(OUTPUT_DIR / "phase3_feature_importance.png", dpi=300)
     plt.close()
 
     report_lines = []
@@ -198,10 +204,10 @@ def main() -> None:
     report_lines.append("- phase3_actual_vs_predicted.png")
     report_lines.append("- phase3_feature_importance.png")
 
-    with open("phase3_report.txt", "w", encoding="utf-8") as f:
+    with open(OUTPUT_DIR / "phase3_report.txt", "w", encoding="utf-8") as f:
         f.write("\n".join(report_lines))
 
-    all_results_df.to_csv("phase3_all_hyperparameter_outcomes.csv", index=False)
+    all_results_df.to_csv(OUTPUT_DIR / "phase3_all_hyperparameter_outcomes.csv", index=False)
 
     print("Best model:", best_model_name)
     print("Best CV R2:", round(all_results_df.iloc[0]["mean_test_score"], 6))

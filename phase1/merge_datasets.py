@@ -1,15 +1,20 @@
 import pandas as pd
+from pathlib import Path
 
 MEAL_INEXPENSIVE_USD = "Meal, Inexpensive Restaurant (USD)"
 AVG_MONTHLY_NET_SALARY_AFTER_TAX = "Average Monthly Net Salary (After Tax)"
 
+ROOT_DIR = Path(__file__).resolve().parents[1]
+RAW_DIR = ROOT_DIR / "data" / "raw"
+INTERIM_DIR = ROOT_DIR / "data" / "interim"
+
 # Load the central dataset
-livable_df = pd.read_csv('livable_cities.csv')
+livable_df = pd.read_csv(RAW_DIR / 'livable_cities.csv')
 livable_df['City'] = livable_df['City'].astype(str).str.strip()
 livable_df['Country'] = livable_df['Country'].astype(str).str.strip()
 
 # Load cost-of-living dataset and select relevant columns
-_cost_path = 'cost-of-living.csv'
+_cost_path = RAW_DIR / 'cost-of-living.csv'
 _cost_header = pd.read_csv(_cost_path, nrows=0).columns.tolist()
 if 'x1' in _cost_header and 'x54' in _cost_header:
     cost_df = pd.read_csv(_cost_path, usecols=['city', 'country', 'x1', 'x54'])
@@ -71,7 +76,7 @@ cost_df['Country'] = cost_df['Country'].replace(country_mapping)
 livable_df = livable_df.merge(cost_df, on=['City', 'Country'], how='left')
 
 # Load air pollution dataset and select relevant columns
-pollution_df = pd.read_csv('air_pollution.csv', usecols=['city', 'country', '2023'])
+pollution_df = pd.read_csv(RAW_DIR / 'air_pollution.csv', usecols=['city', 'country', '2023'])
 pollution_df.rename(columns={'city': 'City', 'country': 'Country', '2023': 'Air_Pollution_2023'}, inplace=True)
 pollution_df['City'] = pollution_df['City'].astype(str).str.strip()
 pollution_df['Country'] = pollution_df['Country'].astype(str).str.strip()
@@ -82,7 +87,7 @@ pollution_df['Country'] = pollution_df['Country'].replace(country_mapping)
 livable_df = livable_df.merge(pollution_df, on=['City', 'Country'], how='left')
 
 # Load uaScoresDataFrame dataset and select relevant columns
-ua_df = pd.read_csv('uaScoresDataFrame.csv', usecols=['UA_Name', 'UA_Country', 'Education', 'Taxation', 'Internet Access'])
+ua_df = pd.read_csv(RAW_DIR / 'uaScoresDataFrame.csv', usecols=['UA_Name', 'UA_Country', 'Education', 'Taxation', 'Internet Access'])
 ua_df.rename(columns={'UA_Name': 'City', 'UA_Country': 'Country'}, inplace=True)
 ua_df['City'] = ua_df['City'].astype(str).str.strip()
 ua_df['Country'] = ua_df['Country'].astype(str).str.strip()
@@ -111,9 +116,9 @@ for idx, row in ua_df.head(15).iterrows():
 livable_df = livable_df.merge(ua_df, on=['City', 'Country'], how='left')
 
 # Save the merged dataset
-livable_df.to_csv('merged_livable_cities.csv', index=False)
+livable_df.to_csv(INTERIM_DIR / 'merged_livable_cities.csv', index=False)
 
-print("\n\nMerged dataset saved as merged_livable_cities.csv")
+print("\n\nMerged dataset saved as data/interim/merged_livable_cities.csv")
 print(f"\nTotal rows in merged dataset: {len(livable_df)}")
 print(f"Rows with Education data: {livable_df['Education'].notna().sum()}")
 print(f"Rows with Taxation data: {livable_df['Taxation'].notna().sum()}")

@@ -1,9 +1,13 @@
 import pandas as pd
+from pathlib import Path
 
 MEAL_INEXPENSIVE_USD = "Meal, Inexpensive Restaurant (USD)"
 AVG_MONTHLY_NET_SALARY_AFTER_TAX = "Average Monthly Net Salary (After Tax)"
 
-df = pd.read_csv('merged_livable_cities.csv')
+ROOT_DIR = Path(__file__).resolve().parents[1]
+INTERIM_DIR = ROOT_DIR / 'data' / 'interim'
+
+df = pd.read_csv(INTERIM_DIR / 'merged_livable_cities.csv')
 print('Merged Dataset Info:')
 print(f'Total rows: {len(df)}')
 print(f'Total columns: {len(df.columns)}')
