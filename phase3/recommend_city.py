@@ -8,7 +8,6 @@ from sklearn.ensemble import GradientBoostingRegressor
 
 ROOT_DIR = Path(__file__).resolve().parents[1]
 PROCESSED_DIR = ROOT_DIR / "data" / "processed"
-OUTPUT_DIR = ROOT_DIR / "outputs" / "phase3"
 
 
 @dataclass
@@ -54,8 +53,7 @@ def get_user_attribute_values(attributes: dict[str, str]) -> dict[str, float]:
 
     for attr, direction in attributes.items():
         while True:
-            raw = input(f"{attr} ({direction}), importance: ").strip()
-
+            raw = input(f"{attr} ({direction}), level [0-10]: ").strip()
             try:
                 val = float(raw)
                 if 0 <= val <= 10:
@@ -118,8 +116,7 @@ def build_user_profile_row(
             model_df[attr], direction, user_values[attr]
         )
 
-    profile_df = pd.DataFrame([profile])
-    return profile_df
+    return pd.DataFrame([profile])
 
 
 def score_all_cities(
@@ -135,7 +132,9 @@ def find_closest_cities_by_score(
 ) -> pd.DataFrame:
     ranked = scored_df.copy()
     ranked["Score_Distance"] = (ranked["Predicted_Livability"] - target_score).abs()
-    ranked = ranked.sort_values(["Score_Distance", "Predicted_Livability"], ascending=[True, False])
+    ranked = ranked.sort_values(
+        ["Score_Distance", "Predicted_Livability"], ascending=[True, False]
+    )
     return ranked[["City", "Country", "Predicted_Livability", "Score_Distance"]].head(top_n)
 
 
@@ -176,13 +175,9 @@ def main():
         top_n=RecommendationConfig().top_n,
     )
 
-    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    nearest_cities.to_csv(OUTPUT_DIR / "city_recommendation_results.csv", index=False)
-
     print(f"\nPredicted livability score for your input profile: {target_livability_score:.4f}")
     print("\nNearest cities by livability score distance:\n")
     print(nearest_cities.to_string(index=False))
-    print("\nSaved recommendations to outputs/phase3/city_recommendation_results.csv")
 
 
 if __name__ == "__main__":
