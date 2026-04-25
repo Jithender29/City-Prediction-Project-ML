@@ -42,16 +42,16 @@ def scale_zero_one(series: pd.Series) -> pd.Series:
 
 
 def get_user_preferences(attributes: dict[str, str]) -> dict[str, float]:
-    print("\nEnter preference importance from 0 to 10 for each attribute.")
-    print("0 = not important, 10 = very important")
-    print("Press Enter to use 0.\n")
+    print("\nAll attributes are included in optimization.")
+    print("Set preference importance from 0 to 10 for each attribute.")
+    print("Press Enter at importance prompt to use 5.\n")
 
     preferences: dict[str, float] = {}
     for attr, direction in attributes.items():
         while True:
             raw = input(f"{attr} ({direction} preferred), importance [0-10]: ").strip()
             if raw == "":
-                preferences[attr] = 0.0
+                preferences[attr] = 5.0
                 break
             try:
                 value = float(raw)
@@ -119,10 +119,24 @@ def recommend_cities(
     total_weight = sum(preferences.values())
 
     if total_weight == 0:
-        total_weight = float(len(attribute_direction))
-        preferences = {k: 1.0 for k in attribute_direction}
+        scored_df["Preference_Score_0_1"] = pd.Series(0.5, index=scored_df.index)
+        scored_df["Final_Suitability_Score"] = (
+            combine_weights.model_weight * scored_df["Model_Score_0_1"]
+            + combine_weights.preference_weight * scored_df["Preference_Score_0_1"]
+        )
+        result_cols = [
+            "City",
+            "Country",
+            "Predicted_Livability",
+            "Model_Score_0_1",
+            "Preference_Score_0_1",
+            "Final_Suitability_Score",
+        ]
+        return scored_df[result_cols].sort_values("Final_Suitability_Score", ascending=False)
 
     for attr, direction in attribute_direction.items():
+        if preferences.get(attr, 0.0) <= 0:
+            continue
         normalized = scale_zero_one(scored_df[attr])
         desirability = normalized if direction == "higher" else 1 - normalized
         weighted = desirability * (preferences.get(attr, 0.0) / total_weight)
@@ -165,18 +179,26 @@ def main() -> None:
     }
     preferences = get_user_preferences(attributes)
 
+    selected_total_weight = sum(preferences.values())
+    if selected_total_weight > 0:
+        combine_weights = RecommendationWeights(model_weight=0.0, preference_weight=1.0)
+        print("\nUsing your selected attributes as the optimization target (preference-first ranking).")
+    else:
+        combine_weights = RecommendationWeights(model_weight=1.0, preference_weight=0.0)
+        print("\nNo attributes selected; falling back to baseline livability model ranking.")
+
     ranked = recommend_cities(
         df=df,
         model=model,
         feature_cols=feature_cols,
         preferences=preferences,
-        combine_weights=RecommendationWeights(model_weight=0.6, preference_weight=0.4),
+        combine_weights=combine_weights,
     )
 
     best = ranked.iloc[0]
     top5 = ranked.head(5).copy()
 
-    print("\nRecommended city based on your selected conditions:")
+    print("\nMost optimal city based on your selected attributes:")
     print(
         f"1) {best['City']}, {best['Country']} | "
         f"Final={best['Final_Suitability_Score']:.4f} | "
@@ -191,8 +213,7 @@ def main() -> None:
             f"Final={row['Final_Suitability_Score']:.4f}"
         )
 
-    ranked.to_csv(OUTPUT_DIR / "city_recommendation_results.csv", index=False)
-    print("\nSaved full ranked list to outputs/phase3/city_recommendation_results.csv")
+    print("\nCSV export is disabled; existing outputs/phase3/city_recommendation_results.csv was not modified.")
 
 
 if __name__ == "__main__":
