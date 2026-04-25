@@ -8,12 +8,12 @@ from sklearn.ensemble import GradientBoostingRegressor
 
 ROOT_DIR = Path(__file__).resolve().parents[1]
 PROCESSED_DIR = ROOT_DIR / "data" / "processed"
+OUTPUT_DIR = ROOT_DIR / "outputs" / "phase3"
 
 
 @dataclass
-class RecommendationWeights:
-    model_weight: float = 0.2
-    preference_weight: float = 0.8
+class RecommendationConfig:
+    top_n: int = 10
 
 
 def add_engineered_features(df: pd.DataFrame) -> pd.DataFrame:
@@ -27,6 +27,11 @@ def add_engineered_features(df: pd.DataFrame) -> pd.DataFrame:
     out["Environment_Balance"] = (
         out["Climate Index"] - out["Pollution Index"] - out["Air_Pollution_2023"]
     )
+    out["Education_Internet_Synergy"] = out["Education"] * out["Internet Access"]
+    out["Mobility_Stress"] = (
+        out["Traffic Commute Time Index"] * out["Pollution Index"]
+    )
+    out["Tax_Adjusted_Power"] = out["Purchasing Power Index"] - out["Taxation"]
 
     return out
 
@@ -41,36 +46,30 @@ def scale_zero_one(series: pd.Series) -> pd.Series:
     return (series - min_v) / (max_v - min_v)
 
 
-def get_user_preferences(attributes: dict[str, str]) -> dict[str, float]:
-    print("\nEnter importance (0–10). At least ONE must be > 0.\n")
+def get_user_attribute_values(attributes: dict[str, str]) -> dict[str, float]:
+    print("\nEnter desired attribute level (0-10).")
+    print("10 means strongest preference in the better direction shown.\n")
 
-    preferences = {}
+    values: dict[str, float] = {}
 
     for attr, direction in attributes.items():
         while True:
             raw = input(f"{attr} ({direction}), importance: ").strip()
 
-            if raw == "":
-                preferences[attr] = 0.0
-                break
-
             try:
                 val = float(raw)
                 if 0 <= val <= 10:
-                    preferences[attr] = val
+                    values[attr] = val
                     break
-            except:
+            except ValueError:
                 pass
 
             print("Enter a number between 0 and 10.")
 
-    if sum(preferences.values()) == 0:
-        raise ValueError("At least one preference must be > 0")
-
-    return preferences
+    return values
 
 
-def train_model(df):
+def train_model(df: pd.DataFrame):
     df = add_engineered_features(df)
 
     max_rank = df["Rank"].max()
@@ -90,82 +89,54 @@ def train_model(df):
     return model, feature_cols
 
 
-def apply_hard_filters(df, preferences):
-    """🔥 This is what makes results ACTUALLY change"""
+def convert_user_value_to_feature_scale(
+    series: pd.Series, direction: str, user_value_0_to_10: float
+) -> float:
+    min_v = float(series.min())
+    max_v = float(series.max())
 
-    df = df.copy()
+    if max_v - min_v == 0:
+        return min_v
 
-    # Example filters (adjust thresholds as needed)
+    desirability = user_value_0_to_10 / 10.0
+    if direction == "higher":
+        return min_v + desirability * (max_v - min_v)
 
-    if preferences.get("Cost of Living Index", 0) >= 8:
-        df = df[df["Cost of Living Index"] < df["Cost of Living Index"].median()]
-
-    if preferences.get("Pollution Index", 0) >= 8:
-        df = df[df["Pollution Index"] < df["Pollution Index"].median()]
-
-    if preferences.get("Safety Index", 0) >= 8:
-        df = df[df["Safety Index"] > df["Safety Index"].median()]
-
-    return df
+    return max_v - desirability * (max_v - min_v)
 
 
-def compute_preference_score(df, preferences):
-    attribute_direction = {
-        "Purchasing Power Index": "higher",
-        "Safety Index": "higher",
-        "Health Care Index": "higher",
-        "Cost of Living Index": "lower",
-        "Property Price to Income Ratio": "lower",
-        "Traffic Commute Time Index": "lower",
-        "Pollution Index": "lower",
-        "Climate Index": "higher",
-        "Education": "higher",
-        "Taxation": "lower",
-        "Internet Access": "higher",
-    }
+def build_user_profile_row(
+    model_df: pd.DataFrame,
+    feature_cols: list[str],
+    attribute_directions: dict[str, str],
+    user_values: dict[str, float],
+) -> pd.DataFrame:
+    profile = {col: float(model_df[col].median()) for col in feature_cols}
 
-    score = pd.Series(0.0, index=df.index)
+    for attr, direction in attribute_directions.items():
+        profile[attr] = convert_user_value_to_feature_scale(
+            model_df[attr], direction, user_values[attr]
+        )
 
-    for attr, direction in attribute_direction.items():
-        weight = preferences.get(attr, 0)
-
-        if weight == 0:
-            continue
-
-        normalized = scale_zero_one(df[attr])
-
-        if direction == "lower":
-            normalized = 1 - normalized
-
-        # 🚀 STRONG influence (no normalization)
-        score += normalized * weight
-
-    return scale_zero_one(score)
+    profile_df = pd.DataFrame([profile])
+    return profile_df
 
 
-def recommend_cities(df, model, feature_cols, preferences, weights):
-    df = add_engineered_features(df)
+def score_all_cities(
+    source_df: pd.DataFrame, model: GradientBoostingRegressor, feature_cols: list[str]
+) -> pd.DataFrame:
+    scored = add_engineered_features(source_df)
+    scored["Predicted_Livability"] = model.predict(scored[feature_cols])
+    return scored
 
-    # 🔥 Apply filtering FIRST
-    df = apply_hard_filters(df, preferences)
 
-    # If filtering removes too much, fallback
-    if len(df) < 5:
-        df = add_engineered_features(df)
-
-    df["Predicted_Livability"] = model.predict(df[feature_cols])
-    df["Model_Score"] = scale_zero_one(df["Predicted_Livability"])
-
-    df["Preference_Score"] = compute_preference_score(df, preferences)
-
-    df["Final_Score"] = (
-        weights.model_weight * df["Model_Score"]
-        + weights.preference_weight * df["Preference_Score"]
-    )
-
-    return df.sort_values("Final_Score", ascending=False)[
-        ["City", "Country", "Final_Score"]
-    ]
+def find_closest_cities_by_score(
+    scored_df: pd.DataFrame, target_score: float, top_n: int
+) -> pd.DataFrame:
+    ranked = scored_df.copy()
+    ranked["Score_Distance"] = (ranked["Predicted_Livability"] - target_score).abs()
+    ranked = ranked.sort_values(["Score_Distance", "Predicted_Livability"], ascending=[True, False])
+    return ranked[["City", "Country", "Predicted_Livability", "Score_Distance"]].head(top_n)
 
 
 def main():
@@ -187,18 +158,31 @@ def main():
         "Internet Access": "higher",
     }
 
-    preferences = get_user_preferences(attributes)
+    user_values = get_user_attribute_values(attributes)
 
-    ranked = recommend_cities(
-        df,
-        model,
-        feature_cols,
-        preferences,
-        RecommendationWeights(),
+    model_df = add_engineered_features(df)
+    user_profile = build_user_profile_row(
+        model_df=model_df,
+        feature_cols=feature_cols,
+        attribute_directions=attributes,
+        user_values=user_values,
+    )
+    target_livability_score = float(model.predict(user_profile[feature_cols])[0])
+
+    scored_cities = score_all_cities(df, model, feature_cols)
+    nearest_cities = find_closest_cities_by_score(
+        scored_df=scored_cities,
+        target_score=target_livability_score,
+        top_n=RecommendationConfig().top_n,
     )
 
-    print("\nTop 5 Cities:\n")
-    print(ranked.head(5))
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    nearest_cities.to_csv(OUTPUT_DIR / "city_recommendation_results.csv", index=False)
+
+    print(f"\nPredicted livability score for your input profile: {target_livability_score:.4f}")
+    print("\nNearest cities by livability score distance:\n")
+    print(nearest_cities.to_string(index=False))
+    print("\nSaved recommendations to outputs/phase3/city_recommendation_results.csv")
 
 
 if __name__ == "__main__":
