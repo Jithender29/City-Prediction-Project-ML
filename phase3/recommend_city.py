@@ -8,7 +8,6 @@ from sklearn.ensemble import GradientBoostingRegressor
 
 ROOT_DIR = Path(__file__).resolve().parents[1]
 PROCESSED_DIR = ROOT_DIR / "data" / "processed"
-OUTPUT_DIR = ROOT_DIR / "outputs" / "phase3"
 
 
 @dataclass
@@ -46,19 +45,15 @@ def scale_zero_one(series: pd.Series) -> pd.Series:
     return (series - min_v) / (max_v - min_v)
 
 
-def get_user_preferences(attributes: dict[str, str]) -> dict[str, float]:
-    print("\nEnter preference importance from 0 to 10 for each attribute.")
-    print("0 = not important, 10 = very important")
-    print("Press Enter to use 0.\n")
+def get_user_attribute_values(attributes: dict[str, str]) -> dict[str, float]:
+    print("\nEnter desired attribute level (0-10).")
+    print("10 means strongest preference in the better direction shown.\n")
 
     values: dict[str, float] = {}
 
     for attr, direction in attributes.items():
         while True:
-            raw = input(f"{attr} ({direction} preferred), importance [0-10]: ").strip()
-            if raw == "":
-                preferences[attr] = 0.0
-                break
+            raw = input(f"{attr} ({direction}), level [0-10]: ").strip()
             try:
                 val = float(raw)
                 if 0 <= val <= 10:
@@ -114,52 +109,33 @@ def build_user_profile_row(
     attribute_directions: dict[str, str],
     user_values: dict[str, float],
 ) -> pd.DataFrame:
-    scored_df = add_engineered_features(df.copy())
-    scored_df["Predicted_Livability"] = model.predict(scored_df[feature_cols])
-    scored_df["Model_Score_0_1"] = scale_zero_one(scored_df["Predicted_Livability"])
+    profile = {col: float(model_df[col].median()) for col in feature_cols}
 
-    attribute_direction = {
-        "Purchasing Power Index": "higher",
-        "Safety Index": "higher",
-        "Health Care Index": "higher",
-        "Cost of Living Index": "lower",
-        "Property Price to Income Ratio": "lower",
-        "Traffic Commute Time Index": "lower",
-        "Pollution Index": "lower",
-        "Climate Index": "higher",
-        "Education": "higher",
-        "Taxation": "lower",
-        "Internet Access": "higher",
-    }
+    for attr, direction in attribute_directions.items():
+        profile[attr] = convert_user_value_to_feature_scale(
+            model_df[attr], direction, user_values[attr]
+        )
 
-    pref_score = pd.Series(0.0, index=scored_df.index)
-    total_weight = sum(preferences.values())
+    return pd.DataFrame([profile])
 
-    if total_weight == 0:
-        total_weight = float(len(attribute_direction))
-        preferences = {k: 1.0 for k in attribute_direction}
 
-    for attr, direction in attribute_direction.items():
-        normalized = scale_zero_one(scored_df[attr])
-        desirability = normalized if direction == "higher" else 1 - normalized
-        weighted = desirability * (preferences.get(attr, 0.0) / total_weight)
-        pref_score = pref_score + weighted
+def score_all_cities(
+    source_df: pd.DataFrame, model: GradientBoostingRegressor, feature_cols: list[str]
+) -> pd.DataFrame:
+    scored = add_engineered_features(source_df)
+    scored["Predicted_Livability"] = model.predict(scored[feature_cols])
+    return scored
 
-    scored_df["Preference_Score_0_1"] = pref_score
-    scored_df["Final_Suitability_Score"] = (
-        combine_weights.model_weight * scored_df["Model_Score_0_1"]
-        + combine_weights.preference_weight * scored_df["Preference_Score_0_1"]
+
+def find_closest_cities_by_score(
+    scored_df: pd.DataFrame, target_score: float, top_n: int
+) -> pd.DataFrame:
+    ranked = scored_df.copy()
+    ranked["Score_Distance"] = (ranked["Predicted_Livability"] - target_score).abs()
+    ranked = ranked.sort_values(
+        ["Score_Distance", "Predicted_Livability"], ascending=[True, False]
     )
-
-    result_cols = [
-        "City",
-        "Country",
-        "Predicted_Livability",
-        "Model_Score_0_1",
-        "Preference_Score_0_1",
-        "Final_Suitability_Score",
-    ]
-    return scored_df[result_cols].sort_values("Final_Suitability_Score", ascending=False)
+    return ranked[["City", "Country", "Predicted_Livability", "Score_Distance"]].head(top_n)
 
 
 def main():
@@ -183,34 +159,25 @@ def main():
 
     user_values = get_user_attribute_values(attributes)
 
-    ranked = recommend_cities(
-        df=df,
-        model=model,
+    model_df = add_engineered_features(df)
+    user_profile = build_user_profile_row(
+        model_df=model_df,
         feature_cols=feature_cols,
-        preferences=preferences,
-        combine_weights=RecommendationWeights(model_weight=0.6, preference_weight=0.4),
+        attribute_directions=attributes,
+        user_values=user_values,
+    )
+    target_livability_score = float(model.predict(user_profile[feature_cols])[0])
+
+    scored_cities = score_all_cities(df, model, feature_cols)
+    nearest_cities = find_closest_cities_by_score(
+        scored_df=scored_cities,
+        target_score=target_livability_score,
+        top_n=RecommendationConfig().top_n,
     )
 
-    best = ranked.iloc[0]
-    top5 = ranked.head(5).copy()
-
-    print("\nRecommended city based on your selected conditions:")
-    print(
-        f"1) {best['City']}, {best['Country']} | "
-        f"Final={best['Final_Suitability_Score']:.4f} | "
-        f"Model={best['Model_Score_0_1']:.4f} | "
-        f"Preference={best['Preference_Score_0_1']:.4f}"
-    )
-
-    print("\nTop 5 suitable cities:")
-    for idx, row in top5.reset_index(drop=True).iterrows():
-        print(
-            f"{idx+1}) {row['City']}, {row['Country']} | "
-            f"Final={row['Final_Suitability_Score']:.4f}"
-        )
-
-    ranked.to_csv(OUTPUT_DIR / "city_recommendation_results.csv", index=False)
-    print("\nSaved full ranked list to outputs/phase3/city_recommendation_results.csv")
+    print(f"\nPredicted livability score for your input profile: {target_livability_score:.4f}")
+    print("\nNearest cities by livability score distance:\n")
+    print(nearest_cities.to_string(index=False))
 
 
 if __name__ == "__main__":
