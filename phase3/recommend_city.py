@@ -12,14 +12,14 @@ OUTPUT_DIR = ROOT_DIR / "outputs" / "phase3"
 
 
 @dataclass
-class RecommendationWeights:
-    model_weight: float = 0.6
-    preference_weight: float = 0.4
+class RecommendationConfig:
+    top_n: int = 10
 
 
 def add_engineered_features(df: pd.DataFrame) -> pd.DataFrame:
     out = df.copy()
     eps = 1e-6
+
     out["Affordability_Balance"] = (
         out["Purchasing Power Index"] / (out["Cost of Living Index"] + eps)
     )
@@ -28,74 +28,91 @@ def add_engineered_features(df: pd.DataFrame) -> pd.DataFrame:
         out["Climate Index"] - out["Pollution Index"] - out["Air_Pollution_2023"]
     )
     out["Education_Internet_Synergy"] = out["Education"] * out["Internet Access"]
-    out["Mobility_Stress"] = out["Traffic Commute Time Index"] * out["Pollution Index"]
+    out["Mobility_Stress"] = (
+        out["Traffic Commute Time Index"] * out["Pollution Index"]
+    )
     out["Tax_Adjusted_Power"] = out["Purchasing Power Index"] - out["Taxation"]
+
     return out
 
 
 def scale_zero_one(series: pd.Series) -> pd.Series:
     min_v = series.min()
     max_v = series.max()
+
     if max_v - min_v == 0:
         return pd.Series([0.5] * len(series), index=series.index)
+
     return (series - min_v) / (max_v - min_v)
 
 
 def get_user_preferences(attributes: dict[str, str]) -> dict[str, float]:
-    print("\nAll attributes are included in optimization.")
-    print("Set preference importance from 0 to 10 for each attribute.")
-    print("Press Enter at importance prompt to use 5.\n")
+    print("\nEnter preference importance from 0 to 10 for each attribute.")
+    print("0 = not important, 10 = very important")
+    print("Press Enter to use 0.\n")
 
-    preferences: dict[str, float] = {}
+    values: dict[str, float] = {}
+
     for attr, direction in attributes.items():
         while True:
             raw = input(f"{attr} ({direction} preferred), importance [0-10]: ").strip()
             if raw == "":
-                preferences[attr] = 5.0
+                preferences[attr] = 0.0
                 break
             try:
-                value = float(raw)
+                val = float(raw)
+                if 0 <= val <= 10:
+                    values[attr] = val
+                    break
             except ValueError:
-                print("Please enter a number between 0 and 10.")
-                continue
+                pass
 
-            if 0 <= value <= 10:
-                preferences[attr] = value
-                break
-            print("Value must be in the range [0, 10].")
+            print("Enter a number between 0 and 10.")
 
-    return preferences
+    return values
 
 
-def train_model(df: pd.DataFrame) -> tuple[GradientBoostingRegressor, list[str], pd.Series]:
-    model_df = add_engineered_features(df)
-    max_rank = model_df["Rank"].max()
-    model_df["Livability_Score"] = max_rank + 1 - model_df["Rank"]
+def train_model(df: pd.DataFrame):
+    df = add_engineered_features(df)
+
+    max_rank = df["Rank"].max()
+    df["Livability_Score"] = max_rank + 1 - df["Rank"]
 
     feature_cols = [
-        c for c in model_df.columns if c not in ["Rank", "City", "Country", "Livability_Score"]
+        c for c in df.columns
+        if c not in ["Rank", "City", "Country", "Livability_Score"]
     ]
-    X = model_df[feature_cols]
-    y = model_df["Livability_Score"]
 
-    model = GradientBoostingRegressor(
-        learning_rate=0.1,
-        max_depth=2,
-        min_samples_leaf=1,
-        n_estimators=400,
-        subsample=0.8,
-        random_state=42,
-    )
+    X = df[feature_cols]
+    y = df["Livability_Score"]
+
+    model = GradientBoostingRegressor(random_state=42)
     model.fit(X, y)
-    return model, feature_cols, y
+
+    return model, feature_cols
 
 
-def recommend_cities(
-    df: pd.DataFrame,
-    model: GradientBoostingRegressor,
+def convert_user_value_to_feature_scale(
+    series: pd.Series, direction: str, user_value_0_to_10: float
+) -> float:
+    min_v = float(series.min())
+    max_v = float(series.max())
+
+    if max_v - min_v == 0:
+        return min_v
+
+    desirability = user_value_0_to_10 / 10.0
+    if direction == "higher":
+        return min_v + desirability * (max_v - min_v)
+
+    return max_v - desirability * (max_v - min_v)
+
+
+def build_user_profile_row(
+    model_df: pd.DataFrame,
     feature_cols: list[str],
-    preferences: dict[str, float],
-    combine_weights: RecommendationWeights,
+    attribute_directions: dict[str, str],
+    user_values: dict[str, float],
 ) -> pd.DataFrame:
     scored_df = add_engineered_features(df.copy())
     scored_df["Predicted_Livability"] = model.predict(scored_df[feature_cols])
@@ -119,24 +136,10 @@ def recommend_cities(
     total_weight = sum(preferences.values())
 
     if total_weight == 0:
-        scored_df["Preference_Score_0_1"] = pd.Series(0.5, index=scored_df.index)
-        scored_df["Final_Suitability_Score"] = (
-            combine_weights.model_weight * scored_df["Model_Score_0_1"]
-            + combine_weights.preference_weight * scored_df["Preference_Score_0_1"]
-        )
-        result_cols = [
-            "City",
-            "Country",
-            "Predicted_Livability",
-            "Model_Score_0_1",
-            "Preference_Score_0_1",
-            "Final_Suitability_Score",
-        ]
-        return scored_df[result_cols].sort_values("Final_Suitability_Score", ascending=False)
+        total_weight = float(len(attribute_direction))
+        preferences = {k: 1.0 for k in attribute_direction}
 
     for attr, direction in attribute_direction.items():
-        if preferences.get(attr, 0.0) <= 0:
-            continue
         normalized = scale_zero_one(scored_df[attr])
         desirability = normalized if direction == "higher" else 1 - normalized
         weighted = desirability * (preferences.get(attr, 0.0) / total_weight)
@@ -159,10 +162,10 @@ def recommend_cities(
     return scored_df[result_cols].sort_values("Final_Suitability_Score", ascending=False)
 
 
-def main() -> None:
-    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+def main():
     df = pd.read_csv(PROCESSED_DIR / "processed_livable_cities.csv")
-    model, feature_cols, _ = train_model(df)
+
+    model, feature_cols = train_model(df)
 
     attributes = {
         "Purchasing Power Index": "higher",
@@ -177,28 +180,21 @@ def main() -> None:
         "Taxation": "lower",
         "Internet Access": "higher",
     }
-    preferences = get_user_preferences(attributes)
 
-    selected_total_weight = sum(preferences.values())
-    if selected_total_weight > 0:
-        combine_weights = RecommendationWeights(model_weight=0.0, preference_weight=1.0)
-        print("\nUsing your selected attributes as the optimization target (preference-first ranking).")
-    else:
-        combine_weights = RecommendationWeights(model_weight=1.0, preference_weight=0.0)
-        print("\nNo attributes selected; falling back to baseline livability model ranking.")
+    user_values = get_user_attribute_values(attributes)
 
     ranked = recommend_cities(
         df=df,
         model=model,
         feature_cols=feature_cols,
         preferences=preferences,
-        combine_weights=combine_weights,
+        combine_weights=RecommendationWeights(model_weight=0.6, preference_weight=0.4),
     )
 
     best = ranked.iloc[0]
     top5 = ranked.head(5).copy()
 
-    print("\nMost optimal city based on your selected attributes:")
+    print("\nRecommended city based on your selected conditions:")
     print(
         f"1) {best['City']}, {best['Country']} | "
         f"Final={best['Final_Suitability_Score']:.4f} | "
@@ -213,7 +209,8 @@ def main() -> None:
             f"Final={row['Final_Suitability_Score']:.4f}"
         )
 
-    print("\nCSV export is disabled; existing outputs/phase3/city_recommendation_results.csv was not modified.")
+    ranked.to_csv(OUTPUT_DIR / "city_recommendation_results.csv", index=False)
+    print("\nSaved full ranked list to outputs/phase3/city_recommendation_results.csv")
 
 
 if __name__ == "__main__":
