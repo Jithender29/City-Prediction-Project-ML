@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ensemble-Based City Predictor (Gradient Boosting)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="dashboard full-width">
+        <main class="main-content centered">
+            <header class="top-header">
+                <div class="header-center">
+                    <h1 class="page-title">Ensemble-Based City Predictor (Gradient Boosting)</h1>
+                    <p class="page-subtitle">Configure your ideal city preferences (Values 0 - 10)</p>
+                </div>
+            </header>
+
+            <div class="panel form-panel">
+                <form id="prediction-form">
+                    
+                    <!-- Horizontal Sections Container -->
+                    <div class="sections-container">
+                        <!-- Section 1: Economics -->
+                        <div class="form-section">
+                            <h3 class="section-title">Economic Factors</h3>
+                            <div class="input-grid vertical">
+                                <div class="input-group">
+                                    <div class="label-wrapper">
+                                        <label>Purchasing Power</label>
+                                        <span class="badge badge-higher">Higher is better</span>
+                                    </div>
+                                    <input type="number" id="Purchasing Power Index" name="Purchasing Power Index" min="0" max="10" step="0.1" value="5.0" oninput="validateInput(this)">
+                                </div>
+                                <div class="input-group">
+                                    <div class="label-wrapper">
+                                        <label>Cost of Living</label>
+                                        <span class="badge badge-lower">Lower is better</span>
+                                    </div>
+                                    <input type="number" id="Cost of Living Index" name="Cost of Living Index" min="0" max="10" step="0.1" value="5.0" oninput="validateInput(this)">
+                                </div>
+                                <div class="input-group">
+                                    <div class="label-wrapper">
+                                        <label>Property Price Ratio</label>
+                                        <span class="badge badge-lower">Lower is better</span>
+                                    </div>
+                                    <input type="number" id="Property Price to Income Ratio" name="Property Price to Income Ratio" min="0" max="10" step="0.1" value="5.0" oninput="validateInput(this)">
+                                </div>
+                                <div class="input-group">
+                                    <div class="label-wrapper">
+                                        <label>Taxation</label>
+                                        <span class="badge badge-lower">Lower is better</span>
+                                    </div>
+                                    <input type="number" id="Taxation" name="Taxation" min="0" max="10" step="0.1" value="5.0" oninput="validateInput(this)">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Section 2: Quality of Life -->
+                        <div class="form-section">
+                            <h3 class="section-title">Quality of Life</h3>
+                            <div class="input-grid vertical">
+                                <div class="input-group">
+                                    <div class="label-wrapper">
+                                        <label>Safety Index</label>
+                                        <span class="badge badge-higher">Higher is better</span>
+                                    </div>
+                                    <input type="number" id="Safety Index" name="Safety Index" min="0" max="10" step="0.1" value="5.0" oninput="validateInput(this)">
+                                </div>
+                                <div class="input-group">
+                                    <div class="label-wrapper">
+                                        <label>Health Care</label>
+                                        <span class="badge badge-higher">Higher is better</span>
+                                    </div>
+                                    <input type="number" id="Health Care Index" name="Health Care Index" min="0" max="10" step="0.1" value="5.0" oninput="validateInput(this)">
+                                </div>
+                                <div class="input-group">
+                                    <div class="label-wrapper">
+                                        <label>Education</label>
+                                        <span class="badge badge-higher">Higher is better</span>
+                                    </div>
+                                    <input type="number" id="Education" name="Education" min="0" max="10" step="0.1" value="5.0" oninput="validateInput(this)">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Section 3: Environment & Infrastructure -->
+                        <div class="form-section">
+                            <h3 class="section-title">Environment & Infrastructure</h3>
+                            <div class="input-grid vertical">
+                                <div class="input-group">
+                                    <div class="label-wrapper">
+                                        <label>Traffic Commute Time</label>
+                                        <span class="badge badge-lower">Lower is better</span>
+                                    </div>
+                                    <input type="number" id="Traffic Commute Time Index" name="Traffic Commute Time Index" min="0" max="10" step="0.1" value="5.0" oninput="validateInput(this)">
+                                </div>
+                                <div class="input-group">
+                                    <div class="label-wrapper">
+                                        <label>Pollution Index</label>
+                                        <span class="badge badge-lower">Lower is better</span>
+                                    </div>
+                                    <input type="number" id="Pollution Index" name="Pollution Index" min="0" max="10" step="0.1" value="5.0" oninput="validateInput(this)">
+                                </div>
+                                <div class="input-group">
+                                    <div class="label-wrapper">
+                                        <label>Climate Index</label>
+                                        <span class="badge badge-higher">Higher is better</span>
+                                    </div>
+                                    <input type="number" id="Climate Index" name="Climate Index" min="0" max="10" step="0.1" value="5.0" oninput="validateInput(this)">
+                                </div>
+                                <div class="input-group">
+                                    <div class="label-wrapper">
+                                        <label>Internet Access</label>
+                                        <span class="badge badge-higher">Higher is better</span>
+                                    </div>
+                                    <input type="number" id="Internet Access" name="Internet Access" min="0" max="10" step="0.1" value="5.0" oninput="validateInput(this)">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="button-container">
+                        <button type="submit" class="submit-btn" id="submit-btn">
+                            <span>Run Prediction Model</span>
+                            <div class="loader" id="loader" style="display: none;"></div>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Results Area -->
+            <div class="results-area hidden" id="results-area">
+                <div class="panel score-panel">
+                    <h3>Target Livability Score</h3>
+                    <div class="score-display">
+                        <svg viewBox="0 0 36 36" class="circular-chart">
+                            <path class="circle-bg"
+                                d="M18 2.0845
+                                a 15.9155 15.9155 0 0 1 0 31.831
+                                a 15.9155 15.9155 0 0 1 0 -31.831"
+                            />
+                            <path class="circle"
+                                stroke-dasharray="0, 100"
+                                d="M18 2.0845
+                                a 15.9155 15.9155 0 0 1 0 31.831
+                                a 15.9155 15.9155 0 0 1 0 -31.831"
+                            />
+                        </svg>
+                        <div class="score-text" id="target-score">--</div>
+                    </div>
+                    <p class="score-subtitle">Based on your preferences</p>
+                </div>
+
+                <div class="panel rec-panel" id="result-card">
+                    <div class="panel-header">
+                        <h3>Top Recommended Cities</h3>
+                        <span class="status-dot"></span>
+                    </div>
+                    <div id="recommendations-container" class="recommendations-list">
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script>
+        function validateInput(el) {
+            if (el.value !== "") {
+                let val = parseFloat(el.value);
+                if (val < 0) el.value = 0;
+                if (val > 10) el.value = 10;
+            }
+        }
+    </script>
+</body>
+</html>
